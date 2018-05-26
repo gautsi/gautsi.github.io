@@ -1,13 +1,12 @@
-function Ball(x, y, r){
+function Boundary(x, y, w, h){
   var options = {
     friction: 0,
-    // frictionAir: 0,
-    // frictionStatic: 0,
-    restitution: 1
-    // density: 0.0001
+    restitution: 1,
+    isStatic: true
   }
-  this.body = Bodies.circle(x, y, r, options);
-  this.r = r;
+  this.body = Bodies.rectangle(x, y, w, h, options);
+  this.w = w;
+  this.h = h;
   World.add(world, this.body);
 
   this.show = function(){
@@ -16,11 +15,12 @@ function Ball(x, y, r){
     push();
     translate(pos.x, pos.y);
     rotate(angle);
+    rectMode(CENTER);
     // strokeWeight(1);
     // stroke(255);
     noStroke();
     fill(157);
-    ellipse(0, 0, this.r * 2);
+    rect(0, 0, this.w, this.h);
     pop();
 
   }
