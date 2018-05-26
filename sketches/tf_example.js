@@ -3,7 +3,7 @@ var num_training = 200;
 var rand_point;
 var predictions = [];
 const model = tf.sequential();
-const learningRate = 0.1;
+const learningRate = 0.05;
 const optimizer = tf.train.adam(learningRate);
 
 function setup() {
