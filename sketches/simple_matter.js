@@ -44,8 +44,19 @@ function setup() {
   model.add(
     tf.layers.dense(
       {
-        units: 1,
+        units: 5,
         inputShape: 15,
+        kernelInitializer: 'randomNormal',
+        biasInitializer: 'randomNormal'
+      }
+    )
+  );
+
+  model.add(
+    tf.layers.dense(
+      {
+        units: 1,
+        inputShape: 5,
         kernelInitializer: 'randomNormal',
         biasInitializer: 'randomNormal'
       }
@@ -215,12 +226,12 @@ function trainModel() {
     labels.push(getLabel(currGameStates[i + 1]));
   }
 
-  // for (var x = 0; x < 10; x ++) {
+  for (var x = 0; x < 10; x ++) {
     optimizer.minimize(() => {
       const pred = model.predict(tf.tensor(inputs));
       return modelLoss(pred, tf.tensor(labels));
     });
-  // }
+  }
 }
 
 function runGame() {
