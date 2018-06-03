@@ -1,8 +1,13 @@
-var training_points = [];
-var num_training = 200;
-var rand_point;
-var predictions = [];
+// defining global variables
+const trainingPoints = [];
+const numTraining = 200;
+const predictions = [];
+const saveFirstFrame = false;
+
+// defining the model
 const model = tf.sequential();
+const layerSizes = [1, 2, 1];
+const activations = ['tanh', null];
 const learningRate = 0.01;
 const optimizer = tf.train.adam(learningRate);
 
@@ -13,27 +18,31 @@ function setup() {
 }
 
 function makeModel() {
-  model.add(tf.layers.dense({activation: 'tanh', units: 2, inputShape: [1]}));
-  model.add(tf.layers.dense({activation: 'tanh', units: 2, inputShape: [2]}));
-  model.add(tf.layers.dense({units: 1, inputShape: [2]}));
+  for (let i = 1; i < layerSizes.length; i ++) {
+    model.add(
+      tf.layers.dense({
+        activation: activations[i - 1],
+        units: layerSizes[i],
+        inputShape: [layerSizes[i - 1]]}));
+  }
 }
 
 function makeTrainingPoints() {
-  for (var i = 0; i < num_training; i ++) {
-    var x = random();
-    var y = sin(TWO_PI * x) + 0.5 * random();
-    training_points[i] = [x, y];
+  for (let i = 0; i < numTraining; i ++) {
+    let x = random();
+    let y = sin(TWO_PI * x) + 0.5 * random();
+    trainingPoints.push([x, y]);
   }
 }
 
 function drawTrainingPoints() {
   noStroke();
-  fill(my_dark_colors[1]);
-  for (var i = 0; i < num_training; i ++) {
+  fill(myDarkColors[1]);
+  for (var i = 0; i < numTraining; i ++) {
     ellipse(
-      map(training_points[i][0], 0, 1, 0, width),
-      map(training_points[i][1], -1, 2, 0, height),
-      5
+      map(trainingPoints[i][0], 0, 1, 0, width),
+      map(trainingPoints[i][1], -1.5, 2, 0, height),
+      6
     );
   }
 }
@@ -43,16 +52,23 @@ function modelLoss(pred, label) {
   return error;
 }
 
-function trainModel() {
-  // pick random points
+function pickRandomTraining(numPoints) {
   var rand_index;
   var xs = [];
   var ys = [];
-  for (var i = 0; i < 40; i ++) {
-    rand_index = int(random(0, num_training));
-    xs.push([training_points[rand_index][0]]);
-    ys.push([training_points[rand_index][1]]);
+  for (var i = 0; i < numPoints; i ++) {
+    rand_index = int(random(0, numTraining));
+    xs.push([trainingPoints[rand_index][0]]);
+    ys.push([trainingPoints[rand_index][1]]);
   }
+
+  return [xs, ys];
+}
+
+function trainModel() {
+
+  // pick random training set
+  var xs, ys
 
   optimizer.minimize(() => {
     const pred = model.predict(tf.tensor(xs));
@@ -84,11 +100,16 @@ function drawPredictionLine() {
 }
 
 function draw() {
-  background(my_light_colors[0]);
+  background(myLightColors[0]);
   drawTrainingPoints();
-  if (frameCount % 50 == 0) {
-    getPredictions();
+
+  if (frameCount == 1 && saveFirstFrame) {
+    saveCanvas("training_points", "jpg");
   }
-  drawPredictionLine();
-  trainModel();
+
+//  if (frameCount % 10 == 0) {
+//    getPredictions();
+//  }
+//  drawPredictionLine();
+//  trainModel();
 }

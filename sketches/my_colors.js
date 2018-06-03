@@ -1,4 +1,4 @@
-my_dark_colors = [
+myDarkColors = [
   'rgb(27,158,119)',
   'rgb(217,95,2)',
   'rgb(117,112,179)',
@@ -7,7 +7,7 @@ my_dark_colors = [
   'rgb(230,171,2)'
 ];
 
-my_light_colors =[
+myLightColors = [
   'rgb(102,194,165)',
   'rgb(252,141,98)',
   'rgb(141,160,203)',
