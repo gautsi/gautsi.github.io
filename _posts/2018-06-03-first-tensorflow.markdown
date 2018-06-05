@@ -12,11 +12,17 @@ In this post I'm going to describe a sketch I'm working on to get familiar with 
 Here is the code to make the training set:
 
 ```javascript
-function makeTrainingPoints() {
-  for (let i = 0; i < numTraining; i ++) {
+function makeTrainingPoints(numPoints) {
+  let points = [];
+
+  for (let i = 0; i < numPoints; i ++) {
     let x = random();
     let y = sin(TWO_PI * x) + 0.5 * random();
-    trainingPoints.push([x, y]);
+    points.push([x, y]);
   }
+
+  return points;
 }
 ```
+
+[Link to the sketch]({% link sketches/first_tf/first_tf.md %})
