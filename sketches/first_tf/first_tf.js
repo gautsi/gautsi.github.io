@@ -112,6 +112,10 @@ function draw() {
     saveCanvas("training_points", "jpg");
   }
 
+  if (frameCount % 10 == 0) {
+    trainingPoints = makeTrainingPoints(numTraining);
+  }
+
 //  if (frameCount % 10 == 0) {
 //    getPredictions();
 //  }

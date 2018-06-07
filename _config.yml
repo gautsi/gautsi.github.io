@@ -28,6 +28,8 @@ theme: minima
 highlighter: rouge
 plugins:
   - jekyll-feed
+header_pages:
+  - about.md
 
 defaults:
   - scope:
