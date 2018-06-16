@@ -1,11 +1,14 @@
 // defining global variables
 let trainingPoints = [];
-const numTraining = 200;
+const numTraining = 400;
 let predictions = [];
 let losses = [];
 const saveFirstFrame = false;
 let xs = [];
 let xt;
+let trainingSteps = 0;
+let batchSize = 100;
+let trail = 10;
 
 // defining the model
 let model;
@@ -59,7 +62,7 @@ function makeTrainingPoints(xs, numPoints) {
 
   for (let i = 0; i < numPoints; i ++) {
     let x = xs[i];
-    let y = sin(TWO_PI * x) + 0.5 * randomGaussian(0, 0.25);
+    let y = sin(TWO_PI * x) + 0.5 * randomGaussian(0, 0.4);
     points.push([x, y]);
   }
 
@@ -83,17 +86,19 @@ function drawPoints(points, pointColor, size) {
   }
 }
 
-function addPredictions(model, xt, predictions, trainingPoints, numPoints = 200) {
+function addPredictions(model, xt, predictions, trainingPoints, trail) {
   let modelPred = model.predict(xt).dataSync();
   let ltstPred = [];
-  for (var i = 0; i < numPoints; i ++) {
+  for (var i = 0; i < trainingPoints.length; i ++) {
     ltstPred.push([xs[i], modelPred[i]]);
   }
   predictions.push(ltstPred);
   losses.push(loss(ltstPred, trainingPoints));
-  if (predictions.length > 10) {
+  if (predictions.length > trail) {
     predictions = predictions.slice(1);
   }
+
+  return predictions;
 }
 
 function loss(pred, training) {
@@ -149,32 +154,44 @@ function drawPredictionLine() {
   }
 }
 
+function roundPlaces(num, places) {
+  return Math.round(num * Math.pow(10, places)) / Math.pow(10, places);
+}
+
 function draw() {
   background(myLightColors[0]);
   drawPoints(trainingPoints, makeColor(myDarkColors[1]), 6);
   for (let i = 0; i < predictions.length; i++) {
     drawPoints(
       predictions[i],
-      makeColor(myDarkColors[2], 255 - 20 * (predictions.length - i)), 2);
+      makeColor(myDarkColors[2], (255 / trail) * i), 2);
   }
 
+  // draw loss graph
+  stroke(myDarkColors[3]);
+  noFill();
+  rect(0, 0, width / 4, height / 4);
+  noStroke();
+  fill(myDarkColors[3]);
   for(let i = 0; i < losses.length; i++) {
-    fill(myDarkColors[3]);
     ellipse(
-      map(i, 0, losses.length, 0, width),
-      map(losses[i], losses[0], 0, 0, height),
-      6
+      map(i, 0, losses.length, 0, width / 4),
+      map(losses[i], losses[0], 0, 0, height / 4),
+      1
     );
   }
+  text(trainingSteps, width / 4 - 10, height / 4 + 14);
+  text(roundPlaces(losses[losses.length - 1], 2), width / 4 + 4,  map(losses[losses.length - 1], losses[0], 0, 0, height / 4));
 
   if (frameCount == 1 && saveFirstFrame) {
     saveCanvas("training_points", "jpg");
   }
 
-  if (frameCount % 5 == 0) {
-    trainModel(model, trainingPoints, 200);
-    addPredictions(model, xt, predictions, trainingPoints);
-  }
+  // if (frameCount % 5 == 0) {
+    trainModel(model, trainingPoints, batchSize);
+    trainingSteps += 1;
+    predictions = addPredictions(model, xt, predictions, trainingPoints, trail);
+  // }
 
 //  if (frameCount % 10 == 0) {
 //    getPredictions();
