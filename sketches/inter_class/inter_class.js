@@ -1,5 +1,5 @@
-const numPixelRows = 20;
-const numPixelCols = 20;
+const numPixelRows = 30;
+const numPixelCols = 30;
 const colorDict = {"yes": 0, "no": 1};
 
 const pixelArray = makePixelArray(numPixelRows, numPixelCols);
@@ -12,7 +12,7 @@ let labelChoice = "yes";
 // defining the model
 let model;
 const layerSizes = [2, 2, 1];
-const activations = ['tanh', 'sigmoid'];
+const activations = ['tanh', 'tanh'];
 const learningRate = 0.01;
 const optimizer = tf.train.adam(learningRate);
 
@@ -66,12 +66,13 @@ function getPixelColors(pixelArray) {
   let pixColors = [];
   let predictions = model.predict(tf.tensor(pixelArray)).dataSync();
   for (let i = 0; i < pixelArray.length; i ++) {
-    if (predictions[i] > 0.5) {
-      pixColors.push([pixelArray[i], "yes"]);
-    }
-    else {
-      pixColors.push([pixelArray[i], "no"]);
-    }
+    // if (predictions[i] > 0.5) {
+    //   pixColors.push([pixelArray[i], "yes"]);
+    // }
+    // else {
+    //   pixColors.push([pixelArray[i], "no"]);
+    // }
+    pixColors.push([pixelArray[i], predictions[i]]);
   }
   return pixColors;
 }
@@ -79,7 +80,14 @@ function getPixelColors(pixelArray) {
 function drawPixels(numPixelRows, numPixelCols, pixelColors) {
   noStroke();
   for (let i = 0; i < pixelColors.length; i ++) {
-    fill(myLightColors[colorDict[pixelColors[i][1]]]);
+    // fill(myLightColors[colorDict[pixelColors[i][1]]]);
+    // fill(map(pixelColors[i][1], -1, 1, 0, 255));
+    fill(makeInbetweenColor(
+      myLightColors[0],
+      myLightColors[1],
+      map(pixelColors[i][1], -1, 1, 0, 1),
+      255
+    ));
     let x = map(pixelColors[i][0][0], 0, 1, 0, width);
     let y = map(pixelColors[i][0][1], 0, 1, 0, height);
     rect(x, y, width / numPixelRows, height / numPixelCols);
@@ -89,6 +97,16 @@ function drawPixels(numPixelRows, numPixelCols, pixelColors) {
 function makeColor(rgbString, colorAlpha = 255) {
   let col = color(rgbString);
   return color(red(col), green(col), blue(col), colorAlpha);
+}
+
+function makeInbetweenColor(rgbString1, rgbString2, weight, colorAlpha = 255) {
+  let col1 = color(rgbString1);
+  let col2 = color(rgbString2);
+  return color(
+    weight * red(col1) + (1 - weight) * red(col2),
+    weight * green(col1) + (1 - weight) * green(col2),
+    weight * blue(col1) + (1 - weight) * blue(col2),
+    colorAlpha);
 }
 
 
@@ -119,8 +137,8 @@ function modelLoss(pred, label) {
 
 function getLoss(model, labeledPoints) {
   let [xs, ys] = getXYs(labeledPoints);
-  let predictions = model.predict(tf.tensor(xs)).dataSync();
-  return loss(predictions, ys);
+  let predictions = model.predict(tf.tensor(xs));
+  return tf.losses.meanSquaredError(tf.tensor(ys), predictions).dataSync();
 }
 
 function getXYs(labeledPoints) {
@@ -130,10 +148,10 @@ function getXYs(labeledPoints) {
     for(let i = 0; i < points.length; i ++) {
       xs.push(points[i]);
       if (label == "yes") {
-        ys.push(1);
+        ys.push([1]);
       }
       else {
-        ys.push(0);
+        ys.push([-1]);
       }
     }
   }
@@ -145,7 +163,7 @@ function trainModel(model, labeledPoints) {
 
   optimizer.minimize(() => {
     let pred = model.predict(tf.tensor(xs));
-    return modelLoss(pred, tf.tensor(ys));
+    return tf.losses.meanSquaredError(tf.tensor(ys), pred);
   })
 }
 
