@@ -8,6 +8,8 @@ let labeledPoints = {"yes": [], "no": []};
 let numLabeledPoints = 0;
 
 let labelChoice = "yes";
+let losses = [];
+let maxLoss = 0;
 
 // defining the model
 let model;
@@ -171,6 +173,27 @@ function roundPlaces(num, places) {
   return Math.round(num * Math.pow(10, places)) / Math.pow(10, places);
 }
 
+function plot(values, maxVal, x, y, w, h) {
+  stroke(myDarkColors[2]);
+  noFill();
+  rect(x, y, w, h);
+  noStroke();
+  fill(myDarkColors[2]);
+  for(let i = 0; i < values.length; i++) {
+    ellipse(
+      map(i, 0, values.length, x, x + w),
+      map(values[i], maxVal, 0, y, y + h),
+      1
+    );
+  }
+  text(values.length, x + w - 10, y + h + 14);
+  text(
+    roundPlaces(values[values.length - 1], 2),
+    x + w + 4,
+    map(values[values.length - 1], maxVal, 0, y, y + h));
+
+}
+
 
 function draw() {
   // background(myLightColors[0]);
@@ -181,9 +204,13 @@ function draw() {
     noStroke();
     fill(myDarkColors[2]);
     let currLoss = getLoss(model, labeledPoints);
-    text("loss = " + roundPlaces(currLoss, 3), 10, 20);
+    if (currLoss > maxLoss) {
+      maxLoss = currLoss;
+    }
+    losses.push(currLoss);
+    plot(losses, maxLoss, 10, 25, width / 5, height / 6);
   }
   noStroke();
   fill(myDarkColors[2]);
-  text("label choice = " + labelChoice, 10, 10);
+  text("label choice = " + labelChoice, 10, 12);
 }
