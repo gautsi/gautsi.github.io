@@ -13,8 +13,8 @@ let maxLoss = 0;
 
 // defining the model
 let model;
-const layerSizes = [2, 2, 1];
-const activations = ['tanh', 'tanh'];
+const layerSizes = [2, 3, 3, 1];
+const activations = ['tanh', 'tanh', 'tanh'];
 const learningRate = 0.01;
 const optimizer = tf.train.adam(learningRate);
 
