@@ -26,3 +26,28 @@ function makeInbetweenColor(rgbString1, rgbString2, weight, colorAlpha = 255) {
     weight * blue(col1) + (1 - weight) * blue(col2),
     colorAlpha);
 }
+
+function roundPlaces(num, places) {
+  return Math.round(num * Math.pow(10, places)) / Math.pow(10, places);
+}
+
+function plot(values, maxVal, x, y, w, h, c) {
+  stroke(myDarkColors[3]);
+  noFill();
+  rect(x, y, w, h);
+  noStroke();
+  fill(myDarkColors[3]);
+  for(let i = 0; i < values.length; i++) {
+    ellipse(
+      map(i, 0, values.length, x, x + w),
+      map(values[i], maxVal, 0, y, y + h),
+      1
+    );
+  }
+  text(values.length, x + w - 10, y + h + 14);
+  text(
+    roundPlaces(values[values.length - 1], 2),
+    x + w + 4,
+    map(values[values.length - 1], maxVal, 0, y, y + h));
+
+}

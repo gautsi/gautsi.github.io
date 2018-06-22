@@ -141,32 +141,6 @@ function trainModel(model, labeledPoints) {
   })
 }
 
-function roundPlaces(num, places) {
-  return Math.round(num * Math.pow(10, places)) / Math.pow(10, places);
-}
-
-function plot(values, maxVal, x, y, w, h) {
-  stroke(myDarkColors[2]);
-  noFill();
-  rect(x, y, w, h);
-  noStroke();
-  fill(myDarkColors[2]);
-  for(let i = 0; i < values.length; i++) {
-    ellipse(
-      map(i, 0, values.length, x, x + w),
-      map(values[i], maxVal, 0, y, y + h),
-      1
-    );
-  }
-  text(values.length, x + w - 10, y + h + 14);
-  text(
-    roundPlaces(values[values.length - 1], 2),
-    x + w + 4,
-    map(values[values.length - 1], maxVal, 0, y, y + h));
-
-}
-
-
 function draw() {
   // background(myLightColors[0]);
   drawPixels(numPixelRows, numPixelCols, getPixelColors(pixelArray));
@@ -180,7 +154,7 @@ function draw() {
       maxLoss = currLoss;
     }
     losses.push(currLoss);
-    plot(losses, maxLoss, 10, 25, width / 5, height / 6);
+    plot(losses, maxLoss, 10, 25, width / 5, height / 6, myDarkColors[2]);
   }
   noStroke();
   fill(myDarkColors[2]);
