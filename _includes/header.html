@@ -8,6 +8,7 @@
 
 {% if page.sketches %}
 <script src='/sketches/my_colors.js' type="text/javascript"></script>
+<script src='/sketches/my_functions.js' type="text/javascript"></script>
   {% for sketch in page.sketches %}
     <script src='/sketches/{{ sketch }}/{{ sketch }}.js' type="text/javascript"></script>
   {% endfor %}
