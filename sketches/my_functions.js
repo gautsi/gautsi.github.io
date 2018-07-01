@@ -1,4 +1,4 @@
-function makeModel(layerSizes, activations) {
+function makeModel(layerSizes, activations, optimizer, loss) {
   let model = tf.sequential();
   for (let i = 1; i < layerSizes.length; i ++) {
     model.add(
@@ -8,6 +8,12 @@ function makeModel(layerSizes, activations) {
         units: layerSizes[i],
         inputShape: [layerSizes[i - 1]]}));
   }
+
+  model.compile({
+    optimizer: optimizer,
+    loss: loss
+  });
+
   return model;
 }
 

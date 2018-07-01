@@ -1,15 +1,13 @@
-// defining global variables
-let trainingPoints = [];
-const numTraining = 400;
-let predictions = [];
+const numTrainingPoints = 150;
 let losses = [];
 let maxLoss = 0;
-const saveFirstFrame = false;
-let xs = [];
+let predictions = [];
+trail = 5;
+
+let xs;
+let ys;
 let xt;
-let trainingSteps = 0;
-let batchSize = 100;
-let trail = 10;
+let yt;
 
 // defining the model
 let model;
@@ -17,191 +15,88 @@ const layerSizes = [1, 2, 1];
 const activations = ['tanh', null];
 const learningRate = 0.01;
 const optimizer = tf.train.adam(learningRate);
+const loss = 'meanSquaredError';
+
 
 function setup() {
   let myCanvas = createCanvas(400, 400);
   myCanvas.parent('first_tf_sketch');
+
   randomSeed(0);
-  xs = getXs(numTraining);
-  xt = getXTensor(numTraining);
-  trainingPoints = makeTrainingPoints(xs, numTraining);
-  model = makeModel(layerSizes, activations);
-  model.compile({
-    optimizer: optimizer,
-    loss: 'meanSquaredError'
-  })
-  tf.tidy(() => {addPredictions(model, xt, predictions, trainingPoints);});
+  [xs, ys] = makeTrainingPoints(numTrainingPoints);
+  [xt, yt] = [tf.tensor(xs), tf.tensor(ys)];
+
+
+  model = makeModel(layerSizes, activations, optimizer, loss);
+
+  setTimeout(() => {train(model, xt, yt)}, 10);
+  setTimeout(() => {getPredictions(model, xt, trail)}, 10);
 }
 
-function getXs(numPoints) {
+function train(model, xt, yt) {
+  tf.tidy(() => {
+    trainModel(model, xt, yt).then(result => {
+
+      losses.push(result);
+      if (result > maxLoss) {
+        maxLoss = result;
+      }
+    });
+  });
+
+  setTimeout(() => {train(model, xt, yt)}, 10);
+}
+
+function trainModel(model, xt, yt) {
+  return model.fit(xt, yt, {
+    shuffle: true,
+    epochs: 1
+  }).then(result => {return result.history.loss[0]});
+}
+
+function makeTrainingPoints(numTrainingPoints) {
   let xs = [];
-  for (let i = 0; i < numPoints; i++) {
-    xs.push(i/numPoints);
-  }
-  return xs;
-}
+  let ys = [];
 
-function getXTensor(numPoints) {
-  let xt = [];
-  for (let i = 0; i < numPoints; i++) {
-    xt.push([i/numPoints]);
-  }
-  return tf.tensor(xt);
-}
-
-function makeModel(layerSizes, activations) {
-  let model = tf.sequential();
-  for (let i = 1; i < layerSizes.length; i ++) {
-    model.add(
-      tf.layers.dense({
-        // kernelInitializer: 'zeros',
-        activation: activations[i - 1],
-        units: layerSizes[i],
-        inputShape: [layerSizes[i - 1]]}));
-  }
-  return model;
-}
-
-function makeTrainingPoints(xs, numPoints) {
-  let points = [];
-
-  for (let i = 0; i < numPoints; i ++) {
-    let x = xs[i];
-    let y = sin(TWO_PI * x) + 0.5 * randomGaussian(0, 0.4);
-    points.push([x, y]);
-  }
-
-  return points;
-}
-
-function makeColor(rgbString, colorAlpha = 255) {
-  let col = color(rgbString);
-  return color(red(col), green(col), blue(col), colorAlpha);
-}
-
-function drawPoints(points, pointColor, size) {
-  noStroke();
-  fill(pointColor);
-  for (var i = 0; i < points.length; i ++) {
-    ellipse(
-      map(points[i][0], 0, 1, 0, width),
-      map(points[i][1], -1.5, 2, 0, height),
-      size
-    );
-  }
-}
-
-function addPredictions(model, xt, predictions, trainingPoints, trail) {
-  let modelPred = model.predict(xt).dataSync();
-  let ltstPred = [];
-  for (var i = 0; i < trainingPoints.length; i ++) {
-    ltstPred.push([xs[i], modelPred[i]]);
-  }
-  predictions.push(ltstPred);
-  if (predictions.length > trail) {
-    predictions = predictions.slice(1);
-  }
-
-  return predictions;
-}
-
-function loss(pred, training) {
-  let error = 0;
-  for(let i = 0; i < pred.length; i++) {
-    error += Math.pow(pred[i][1] - training[i][1], 2);
-  }
-  return error / pred.length;
-}
-
-function modelLoss(pred, label) {
-  return pred.sub(label).square().mean();
-}
-
-function pickRandomPoints(points, numPoints) {
-  var rand_index;
-  var xs = [];
-  var ys = [];
-  for (var i = 0; i < numPoints; i ++) {
-    rand_index = int(random(0, points.length));
-    xs.push([points[rand_index][0]]);
-    ys.push([points[rand_index][1]]);
+  for (let i = 0; i < numTrainingPoints; i ++) {
+    let x = i / numTrainingPoints;
+    let y = 0.5 + 0.3 * sin(TWO_PI * x) + randomGaussian(0, 0.08);
+    xs.push([x]);
+    ys.push([y]);
   }
 
   return [xs, ys];
 }
 
-async function trainModel(model, trainingPoints, batchSize) {
-
-  // pick random training batch
-  let [xs, ys] = pickRandomPoints(trainingPoints, batchSize);
-
-  return await model.fit(tf.tensor(xs), tf.tensor(ys));
-
-  // optimizer.minimize(() => {
-  //   let pred = model.predict(tf.tensor(xs));
-  //   return modelLoss(pred, tf.tensor(ys));
-  // })
-}
-
-function drawPredictionLine() {
-  strokeWeight(2);
-  stroke(my_dark_colors[2]);
-  var current_pred = predictions[0];
-  for (var i = 0; i < num_training - 1; i ++) {
-    var new_pred = predictions[i + 1];
-    line(
-      map(i / num_training, 0, 1, 0, width),
-      map(current_pred, -1, 2, 0, height),
-      map((i + 1) / num_training, 0, 1, 0, width),
-      map(new_pred, -1, 2, 0, height)
-    );
-
-    current_pred = new_pred;
+function plotPredictions(predictions, w, h, c) {
+  for (let i = 0; i < predictions.length; i++) {
+    plotPoints(xs, predictions[i], w, h, makeColor(c, (255 / predictions.length) * i), 0, 2);
   }
 }
 
-function roundPlaces(num, places) {
-  return Math.round(num * Math.pow(10, places)) / Math.pow(10, places);
+function getPredictions(model, xt, trail) {
+  // get predictions
+  tf.tidy(() => {
+    model.predict(xt).data().then(result => {
+      predictions.push(result);
+      if (predictions.length > trail) {
+        predictions = predictions.slice(1);
+      }
+    });
+  });
+
+  setTimeout(() => {getPredictions(model, xt, trail)}, 10);
 }
 
 function draw() {
   background(myLightColors[0]);
-  drawPoints(trainingPoints, makeColor(myDarkColors[1]), 6);
-  for (let i = 0; i < predictions.length; i++) {
-    drawPoints(
-      predictions[i],
-      makeColor(myDarkColors[2], (255 / trail) * i), 2);
-  }
 
-  // draw loss graph
-  stroke(myDarkColors[3]);
-  noFill();
-  rect(0, 0, width / 4, height / 4);
-  noStroke();
-  fill(myDarkColors[3]);
-  for(let i = 0; i < losses.length; i++) {
-    ellipse(
-      map(i, 0, losses.length, 0, width / 4),
-      map(losses[i], losses[0], 0, 0, height / 4),
-      1
-    );
-  }
-  text(trainingSteps, width / 4 - 10, height / 4 + 14);
-  text(roundPlaces(losses[losses.length - 1], 2), width / 4 + 4,  map(losses[losses.length - 1], losses[0], 0, 0, height / 4));
+  // plot training points
+  plotPoints(xs, ys, width, height, myDarkColors[1], 6, 0);
 
-  if (frameCount == 1 && saveFirstFrame) {
-    saveCanvas("training_points", "jpg");
-  }
+  // plot predictions
+  plotPredictions(predictions, width, height, myDarkColors[2]);
 
-  // if (frameCount % 5 == 0) {
-    trainModel(model, trainingPoints, batchSize).then(h => {losses.push(h.history.loss[0])});
-    trainingSteps += 1;
-    tf.tidy(() => {predictions = addPredictions(model, xt, predictions, trainingPoints, trail);});
-  // }
-
-//  if (frameCount % 10 == 0) {
-//    getPredictions();
-//  }
-//  drawPredictionLine();
-//  trainModel();
+  // plot losses
+  plot(losses, maxLoss, 0, 0, width / 4, height / 4, myDarkColors[3]);
 }

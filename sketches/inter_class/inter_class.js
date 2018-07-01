@@ -17,11 +17,13 @@ const layerSizes = [2, 3, 3, 1];
 const activations = ['tanh', 'tanh', 'tanh'];
 const learningRate = 0.01;
 const optimizer = tf.train.adam(learningRate);
+const loss = 'meanSquaredError';
+
 
 function setup() {
   let myCanvas = createCanvas(400, 400);
   myCanvas.parent('inter_class_sketch');
-  model = makeModel(layerSizes, activations);
+  model = makeModel(layerSizes, activations, optimizer, loss);
 }
 
 
@@ -95,14 +97,6 @@ function drawLabeledPoints(labeledPoints) {
 
     }
   }
-}
-
-function loss(pred, training) {
-  let error = 0;
-  for(let i = 0; i < pred.length; i++) {
-    error += Math.pow(pred[i] - training[i], 2);
-  }
-  return error / pred.length;
 }
 
 function modelLoss(pred, label) {
