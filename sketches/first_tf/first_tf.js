@@ -3,6 +3,7 @@ let trainingPoints = [];
 const numTraining = 400;
 let predictions = [];
 let losses = [];
+let maxLoss = 0;
 const saveFirstFrame = false;
 let xs = [];
 let xt;
@@ -25,7 +26,11 @@ function setup() {
   xt = getXTensor(numTraining);
   trainingPoints = makeTrainingPoints(xs, numTraining);
   model = makeModel(layerSizes, activations);
-  addPredictions(model, xt, predictions, trainingPoints);
+  model.compile({
+    optimizer: optimizer,
+    loss: 'meanSquaredError'
+  })
+  tf.tidy(() => {addPredictions(model, xt, predictions, trainingPoints);});
 }
 
 function getXs(numPoints) {
@@ -93,7 +98,6 @@ function addPredictions(model, xt, predictions, trainingPoints, trail) {
     ltstPred.push([xs[i], modelPred[i]]);
   }
   predictions.push(ltstPred);
-  losses.push(loss(ltstPred, trainingPoints));
   if (predictions.length > trail) {
     predictions = predictions.slice(1);
   }
@@ -126,15 +130,17 @@ function pickRandomPoints(points, numPoints) {
   return [xs, ys];
 }
 
-function trainModel(model, trainingPoints, batchSize) {
+async function trainModel(model, trainingPoints, batchSize) {
 
   // pick random training batch
   let [xs, ys] = pickRandomPoints(trainingPoints, batchSize);
 
-  optimizer.minimize(() => {
-    let pred = model.predict(tf.tensor(xs));
-    return modelLoss(pred, tf.tensor(ys));
-  })
+  return await model.fit(tf.tensor(xs), tf.tensor(ys));
+
+  // optimizer.minimize(() => {
+  //   let pred = model.predict(tf.tensor(xs));
+  //   return modelLoss(pred, tf.tensor(ys));
+  // })
 }
 
 function drawPredictionLine() {
@@ -188,9 +194,9 @@ function draw() {
   }
 
   // if (frameCount % 5 == 0) {
-    trainModel(model, trainingPoints, batchSize);
+    trainModel(model, trainingPoints, batchSize).then(h => {losses.push(h.history.loss[0])});
     trainingSteps += 1;
-    predictions = addPredictions(model, xt, predictions, trainingPoints, trail);
+    tf.tidy(() => {predictions = addPredictions(model, xt, predictions, trainingPoints, trail);});
   // }
 
 //  if (frameCount % 10 == 0) {

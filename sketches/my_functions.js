@@ -31,12 +31,46 @@ function roundPlaces(num, places) {
   return Math.round(num * Math.pow(10, places)) / Math.pow(10, places);
 }
 
+function plotPoints(xs, ys, w, h, c, ps, lw) {
+  noStroke();
+  fill(c);
+
+  for (let i = 0; i < xs.length; i ++) {
+    let x = xs[i];
+    let y = ys[i];
+
+    if (ps > 0) {
+      ellipse(
+        map(x, 0, 1, 0, w),
+        map(y, 0, 1, 0, h),
+        ps
+      );
+    }
+
+    if (lw > 0 && i < (xs.length - 1)) {
+      stroke(c);
+      strokeWeight(lw);
+
+      let nextX = xs[i + 1];
+      let nextY = ys[i + 1];
+
+      line(
+        map(x, 0, 1, 0, w),
+        map(y, 0, 1, 0, h),
+        map(nextX, 0, 1, 0, w),
+        map(nextY, 0, 1, 0, h)
+      );
+    }
+  }
+}
+
+
 function plot(values, maxVal, x, y, w, h, c) {
-  stroke(myDarkColors[3]);
+  stroke(c);
   noFill();
   rect(x, y, w, h);
   noStroke();
-  fill(myDarkColors[3]);
+  fill(c);
   for(let i = 0; i < values.length; i++) {
     ellipse(
       map(i, 0, values.length, x, x + w),
