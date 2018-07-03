@@ -1,5 +1,5 @@
-let xres = 20;
-let yres = 20;
+let xres = 30;
+let yres = 30;
 const pixels = getPixels(xres, yres);
 let colors;
 let labeledPoints = [];
@@ -8,7 +8,7 @@ let labels = [];
 let yt;
 let currentLabelChoice = 1;
 let losses = [];
-let maxLoss = 0;
+let maxLossPlot = 500;
 
 // defining the model
 let model;
@@ -49,11 +49,7 @@ function train() {
     model
       .fit(xt, yt)
       .then(result => {
-        let newLoss = result.history.loss[0];
-        losses.push(newLoss);
-        if (newLoss > maxLoss) {
-          maxLoss = newLoss;
-        }
+        losses.push(result.history.loss[0]);
       });
   }
   setTimeout(train, 10);
@@ -115,7 +111,7 @@ function draw() {
   if (labeledPoints.length > 0) {
     drawLabeledPoints(labeledPoints, labels, 5, width, height);
   }
-  plot(losses, maxLoss, 0, 0, width / 4, height / 4, myDarkColors[2]);
+  plot(losses, maxLossPlot, 10, 10, width / 4, height / 4, myDarkColors[2]);
 
   noStroke();
   fill(myDarkColors[2]);

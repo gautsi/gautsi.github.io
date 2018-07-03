@@ -71,19 +71,29 @@ function plotPoints(xs, ys, w, h, c, ps, lw) {
 }
 
 
-function plot(values, maxVal, x, y, w, h, c) {
+function plot(values, plotWindowSize, x, y, w, h, c) {
   stroke(c);
   noFill();
   rect(x, y, w, h);
   noStroke();
   fill(c);
-  for(let i = 0; i < values.length; i++) {
+
+  let maxVal = 0;
+  let startingValueIndex = Math.max(0, values.length - plotWindowSize);
+
+  if (values.length > 0) {
+    let windowValues = values.slice(startingValueIndex, values.length);
+    maxVal = Math.max(...windowValues);
+  }
+
+  for(let i = startingValueIndex; i < values.length; i++) {
     ellipse(
-      map(i, 0, values.length, x, x + w),
+      map(i, startingValueIndex, values.length, x, x + w),
       map(values[i], maxVal, 0, y, y + h),
       1
     );
   }
+  text(startingValueIndex, x, y + h + 14);
   text(values.length, x + w - 10, y + h + 14);
   text(
     roundPlaces(values[values.length - 1], 2),

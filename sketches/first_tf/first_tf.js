@@ -1,6 +1,6 @@
 const numTrainingPoints = 150;
 let losses = [];
-let maxLoss = 0;
+let maxLossPlot = 500;
 let predictions = [];
 trail = 5;
 
@@ -36,11 +36,7 @@ function setup() {
 function train(model, xt, yt) {
   tf.tidy(() => {
     trainModel(model, xt, yt).then(result => {
-
       losses.push(result);
-      if (result > maxLoss) {
-        maxLoss = result;
-      }
     });
   });
 
@@ -98,5 +94,5 @@ function draw() {
   plotPredictions(predictions, width, height, myDarkColors[2]);
 
   // plot losses
-  plot(losses, maxLoss, 0, 0, width / 4, height / 4, myDarkColors[3]);
+  plot(losses, maxLossPlot, 0, 0, width / 4, height / 4, myDarkColors[3]);
 }
