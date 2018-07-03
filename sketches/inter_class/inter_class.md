@@ -9,6 +9,6 @@ sketches:
   - inter_class
 ---
 
- [Link to the post]({% post_url 2018-06-20-inter-class %})
+[Link to the post]({% post_url 2018-06-20-inter-class %})
 
 <div id="inter_class_sketch" style="height: 400px; width:400px; position:relative;" ></div>
