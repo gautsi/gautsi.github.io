@@ -27,9 +27,9 @@ function makeInbetweenColor(rgbString1, rgbString2, weight, colorAlpha = 255) {
   let col1 = color(rgbString1);
   let col2 = color(rgbString2);
   return color(
-    weight * red(col1) + (1 - weight) * red(col2),
-    weight * green(col1) + (1 - weight) * green(col2),
-    weight * blue(col1) + (1 - weight) * blue(col2),
+    (1 - weight) * red(col1) + weight * red(col2),
+    (1 - weight) * green(col1) + weight * green(col2),
+    (1 - weight) * blue(col1) + weight * blue(col2),
     colorAlpha);
 }
 

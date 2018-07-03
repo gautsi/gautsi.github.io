@@ -1,13 +1,12 @@
-const numPixelRows = 20;
-const numPixelCols = 20;
-const colorDict = {"yes": 0, "no": 1};
-
-const pixelArray = makePixelArray(numPixelRows, numPixelCols);
-
-let labeledPoints = {"yes": [], "no": []};
-let numLabeledPoints = 0;
-
-let labelChoice = "yes";
+let xres = 20;
+let yres = 20;
+const pixels = getPixels(xres, yres);
+let colors;
+let labeledPoints = [];
+let xt;
+let labels = [];
+let yt;
+let currentLabelChoice = 1;
 let losses = [];
 let maxLoss = 0;
 
@@ -19,138 +18,106 @@ const learningRate = 0.01;
 const optimizer = tf.train.adam(learningRate);
 const loss = 'meanSquaredError';
 
-
 function setup() {
   let myCanvas = createCanvas(400, 400);
   myCanvas.parent('inter_class_sketch');
   model = makeModel(layerSizes, activations, optimizer, loss);
+  setTimeout(getColors, 10);
+  setTimeout(train, 10);
 }
 
-
-function makePixelArray(numPixelRows, numPixelCols) {
-  let pix = [];
-  for (let i = 0; i < numPixelRows; i ++) {
-    for (let j = 0; j < numPixelCols; j ++){
-      pix.push([i / numPixelRows, j / numPixelCols]);
+function getPixels(xres, yres) {
+  let pixels = [];
+  for (let i = 0; i < xres; i ++) {
+    for (let j = 0; j < yres; j ++) {
+      pixels.push([i / xres, j / yres]);
     }
   }
-  return pix;
+  return tf.tensor(pixels);
+}
+
+function getColors() {
+  tf.tidy(() => {
+    model.predict(pixels).data().then(result => {colors = result});
+  });
+
+  setTimeout(getColors, 10);
+}
+
+function train() {
+  if (labeledPoints.length > 0) {
+    model
+      .fit(xt, yt)
+      .then(result => {
+        let newLoss = result.history.loss[0];
+        losses.push(newLoss);
+        if (newLoss > maxLoss) {
+          maxLoss = newLoss;
+        }
+      });
+  }
+  setTimeout(train, 10);
 }
 
 function keyPressed() {
   // S for "switch"
   if (keyCode == 83) {
-    if (labelChoice == "yes") {
-      labelChoice = "no";
-    }
-    else {
-      labelChoice = "yes";
-    }
+    currentLabelChoice *= -1;
   }
 }
 
 function mouseClicked() {
-  labeledPoints[labelChoice].push([map(mouseX, 0, width, 0, 1), map(mouseY, 0, height, 0, 1)]);
-  numLabeledPoints += 1;
-}
-
-function getPixelColors(pixelArray) {
-  let pixColors = [];
-  let predictions = model.predict(tf.tensor(pixelArray)).dataSync();
-  for (let i = 0; i < pixelArray.length; i ++) {
-    // if (predictions[i] > 0.5) {
-    //   pixColors.push([pixelArray[i], "yes"]);
-    // }
-    // else {
-    //   pixColors.push([pixelArray[i], "no"]);
-    // }
-    pixColors.push([pixelArray[i], predictions[i]]);
+  labeledPoints.push([map(mouseX, 0, width, 0, 1), map(mouseY, 0, height, 0, 1)]);
+  labels.push([currentLabelChoice]);
+  if (xt) {
+    xt.dispose();
   }
-  return pixColors;
-}
-
-function drawPixels(numPixelRows, numPixelCols, pixelColors) {
-  noStroke();
-  for (let i = 0; i < pixelColors.length; i ++) {
-    // fill(myLightColors[colorDict[pixelColors[i][1]]]);
-    // fill(map(pixelColors[i][1], -1, 1, 0, 255));
-    fill(makeInbetweenColor(
-      myLightColors[0],
-      myLightColors[1],
-      map(pixelColors[i][1], -1, 1, 0, 1),
-      255
-    ));
-    let x = map(pixelColors[i][0][0], 0, 1, 0, width);
-    let y = map(pixelColors[i][0][1], 0, 1, 0, height);
-    rect(x, y, width / numPixelRows, height / numPixelCols);
+  if (yt) {
+    yt.dispose();
   }
+  xt = tf.tensor2d(labeledPoints);
+  yt = tf.tensor2d(labels);
 }
 
-function drawLabeledPoints(labeledPoints) {
-  noStroke();
-  for (const [label, points] of Object.entries(labeledPoints)) {
-    for(let i = 0; i < points.length; i ++) {
-      fill(makeColor(myDarkColors[colorDict[label]], 170));
-      let x = map(points[i][0], 0, 1, 0, width);
-      let y = map(points[i][1], 0, 1, 0, height);
-      rect(x, y, width / numPixelRows, height / numPixelCols);
 
+function drawPixels(xres, yres, colors, w, h) {
+  noStroke();
+  for (let i = 0; i < xres; i ++) {
+    for (let j = 0; j < yres; j ++) {
+
+      fill(makeInbetweenColor(
+        myLightColors[0],
+        myLightColors[1],
+        map(colors[i * xres + j], -1, 1, 0, 1),
+        255
+      ));
+
+      let x = map(i / xres, 0, 1, 0, w);
+      let y = map(j / yres, 0, 1, 0, h);
+      rect(x, y, w / xres, h / yres);
     }
   }
 }
 
-function modelLoss(pred, label) {
-  return pred.sub(label).square().mean();
-}
-
-function getLoss(model, labeledPoints) {
-  let [xs, ys] = getXYs(labeledPoints);
-  let predictions = model.predict(tf.tensor(xs));
-  return tf.losses.meanSquaredError(tf.tensor(ys), predictions).dataSync();
-}
-
-function getXYs(labeledPoints) {
-  let xs = [];
-  let ys = [];
-  for (const [label, points] of Object.entries(labeledPoints)) {
-    for(let i = 0; i < points.length; i ++) {
-      xs.push(points[i]);
-      if (label == "yes") {
-        ys.push([1]);
-      }
-      else {
-        ys.push([-1]);
-      }
-    }
+function drawLabeledPoints(labeledPoints, labels, s, w, h) {
+  for (let i = 0; i < labeledPoints.length; i ++) {
+    fill(myDarkColors[map(labels[i], -1, 1, 0, 1)]);
+    let x = map(labeledPoints[i][0], 0, 1, 0, w);
+    let y = map(labeledPoints[i][1], 0, 1, 0, h);
+    rect(x, y, s, s);
   }
-  return [xs, ys];
-}
-
-function trainModel(model, labeledPoints) {
-  let [xs, ys] = getXYs(labeledPoints);
-
-  optimizer.minimize(() => {
-    let pred = model.predict(tf.tensor(xs));
-    return tf.losses.meanSquaredError(tf.tensor(ys), pred);
-  })
 }
 
 function draw() {
-  // background(myLightColors[0]);
-  drawPixels(numPixelRows, numPixelCols, getPixelColors(pixelArray));
-  if (numLabeledPoints > 0) {
-    drawLabeledPoints(labeledPoints);
-    trainModel(model, labeledPoints);
-    noStroke();
-    fill(myDarkColors[2]);
-    let currLoss = getLoss(model, labeledPoints);
-    if (currLoss > maxLoss) {
-      maxLoss = currLoss;
-    }
-    losses.push(currLoss);
-    plot(losses, maxLoss, 10, 25, width / 5, height / 6, myDarkColors[2]);
+  if (colors) {
+    drawPixels(xres, yres, colors, width, height);
   }
+  if (labeledPoints.length > 0) {
+    drawLabeledPoints(labeledPoints, labels, 5, width, height);
+  }
+  plot(losses, maxLoss, 0, 0, width / 4, height / 4, myDarkColors[2]);
+
   noStroke();
   fill(myDarkColors[2]);
-  text("label choice = " + labelChoice, 10, 12);
+  text("label choice = " + currentLabelChoice, width - 100, 12);
 }
