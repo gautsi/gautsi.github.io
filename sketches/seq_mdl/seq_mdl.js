@@ -1,7 +1,7 @@
 let path = [];
 let sgmntLength = 5;
-let lineLength = 10;
-let showLength = 100;
+let lineLength = 8;
+let showLength = 50;
 
 let mdlPath = [];
 let losses = [];
@@ -72,7 +72,24 @@ function predPath() {
   if (mdlPath.length >= sgmntLength) {
     tf.tidy(() => {
       let inputPath = tf.tensor([mdlPath.slice(mdlPath.length - sgmntLength).reduce((a, c) => a.concat(c))]);
-      model.predict(inputPath).data().then(result => {mdlPath.push([result[0], result[1]])});
+      model.predict(inputPath).data().then(result => {
+        if (Math.abs(result[0]) > Math.abs(result[1])) {
+          if (result[0] > 0) {
+            mdlPath.push([1, 0]);
+          }
+          else {
+            mdlPath.push([-1, 0]);
+          }
+        }
+        else {
+          if (result[1] > 0) {
+            mdlPath.push([0, 1]);
+          }
+          else {
+            mdlPath.push([0, -1]);
+          }
+        }
+      });
       inputPath.dispose();
     });
   }
@@ -105,7 +122,7 @@ function drawPath(startX, startY, path, lineLength, c, lw) {
   let currPoint = [startX, startY];
   for (let i = 0; i < path.length; i ++) {
     let nextPoint = [currPoint[0] + lineLength * path[i][0], currPoint[1] + lineLength * path[i][1]];
-    stroke(makeColor(c, 255 * (i / path.length)));
+    stroke(makeColor(c, 250 * (i / path.length)));
     strokeWeight(lw);
     line(currPoint[0], currPoint[1], nextPoint[0], nextPoint[1]);
     currPoint = nextPoint;

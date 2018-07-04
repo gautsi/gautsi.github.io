@@ -73,6 +73,7 @@ function plotPoints(xs, ys, w, h, c, ps, lw) {
 
 function plot(values, plotWindowSize, x, y, w, h, c) {
   stroke(c);
+  strokeWeight(1);
   noFill();
   rect(x, y, w, h);
   noStroke();
