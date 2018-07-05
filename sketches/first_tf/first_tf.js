@@ -4,6 +4,9 @@ let maxLossPlot = 500;
 let predictions = [];
 trail = 5;
 
+const saveFrames = []; // [1, 50, 500, 1000];
+const savedFrames = [];
+
 let xs;
 let ys;
 let xt;
@@ -95,4 +98,11 @@ function draw() {
 
   // plot losses
   plot(losses, maxLossPlot, 0, 0, width / 4, height / 4, myDarkColors[3]);
+
+  // save frames
+  if (saveFrames.includes(losses.length) && !savedFrames.includes(losses.length)) {
+    saveCanvas("first_tf_" + losses.length, "jpg");
+    savedFrames.push(losses.length);
+  }
+
 }
