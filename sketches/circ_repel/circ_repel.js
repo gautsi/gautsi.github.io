@@ -6,12 +6,22 @@ function Circle(x, y, r) {
   this.yv = 0;
   this.xa = 0;
   this.ya = 0;
+  this.posList = [];
 
   this.show = function() {
-    stroke(makeColor(myDarkColors[1], 50));
+    stroke(makeColor(myDarkColors[1], 40));
     strokeWeight(2);
     noFill();
     ellipse(this.x, this.y, this.r, this.r);
+    // this.showTrail();
+  }
+
+  this.showTrail = function() {
+    fill(makeColor(myDarkColors[3], 255));
+    noStroke();
+    for (let i = 0; i < this.posList.length; i ++) {
+      ellipse(this.posList[i][0], this.posList[i][1], 1);
+    }
   }
 
   this.updatePos = function() {
@@ -19,6 +29,11 @@ function Circle(x, y, r) {
     this.yv += this.ya;
     this.x += this.xv;
     this.y += this.yv;
+    this.posList.push([this.x, this.y]);
+    if (this.posList.length > 100) {
+      this.posList = this.posList.slice(1);
+    }
+
   }
 }
 
@@ -26,10 +41,18 @@ function Circles(circleList) {
   this.circleList = circleList;
 
   this.show = function() {
+    if (showCirc == 1) {
+      this.showCircles();
+    }
+    if (showLin == 1) {
+      this.showLines();
+    }
+  }
+
+  this.showCircles = function() {
     for (let i = 0; i < this.circleList.length; i ++) {
       this.circleList[i].show();
     }
-    this.showLines();
   }
 
   this.updatePos = function() {
@@ -43,22 +66,16 @@ function Circles(circleList) {
       let xa = 0;
       let ya = 0;
       for (let j = 0; j < this.circleList.length; j ++) {
-        if (i != j) {
-          let distance = dist(circleList[i].x, circleList[i].y, circleList[j].x, circleList[j].y);
-          // distx = this.circleList[j].x - this.circleList[i].x;
-          // dirx = Math.sign(distx);
-          // xa += -dirx / 10 * exp(-1 * abs(distx));
-          xa += 1/2000 * (circleList[i].x - circleList[j].x) / (0.01 + distance);
-
-          // disty = this.circleList[j].y - this.circleList[i].y;
-          // diry = Math.sign(disty);
-          // ya += -diry / 10 * exp(-1 * abs(disty));
-          ya += 1/2000 * (circleList[i].y - circleList[j].y) / (0.01 + distance);
+        let distance = dist(circleList[i].x, circleList[i].y, circleList[j].x, circleList[j].y);
+        if (distance > 0) {
+          let distFactor = 1 / 2 * exp(-1 / 15 * distance);
+          xa += distFactor * (circleList[i].x - circleList[j].x) / (distance);
+          ya += distFactor * (circleList[i].y - circleList[j].y) / (distance);
         }
       }
       // walls
-      xa += 1/2 * (1 / (1 + this.circleList[i].x) -  1 / (1 + width - this.circleList[i].x));
-      ya += 1/2 * (1 / (1 + this.circleList[i].y) -  1 / (1 + height - this.circleList[i].y));
+      xa += 1/2 * (2 / (50 + this.circleList[i].x) -  2 / (50 + width - this.circleList[i].x));
+      ya += 1/2 * (2 / (50 + this.circleList[i].y) -  2 / (50 + height - this.circleList[i].y));
       this.circleList[i].xa = xa / 3;
       this.circleList[i].ya = ya / 3;
     }
@@ -70,7 +87,7 @@ function Circles(circleList) {
     for (let i = 0; i < this.circleList.length - 1; i ++) {
       for (let j = i + 1; j < this.circleList.length; j ++) {
         let distance = dist(circleList[i].x, circleList[i].y, circleList[j].x, circleList[j].y);
-        stroke(makeColor(myDarkColors[2], map(distance, 0, 100, 255, 0)));
+        stroke(makeColor(myDarkColors[2], map(distance, 0, 100, 800, 0)));
         line(this.circleList[i].x, this.circleList[i].y, this.circleList[j].x, this.circleList[j].y);
       }
     }
@@ -78,11 +95,13 @@ function Circles(circleList) {
 }
 
 let circles;
+let showCirc = 1;
+let showLin = 1;
 
 function setup() {
   let myCanvas = createCanvas(400, 400);
   myCanvas.parent('circ_repel_sketch');
-  circles = makeCircles(4, 4, 100, 100, 60, 60, 70, 1);
+  circles = makeCircles(4, 4, 100, 100, 60, 60, 70, 0);
 }
 
 function makeCircles(nrow, ncol, firstx, firsty, incrx, incry, r, randFactor) {
@@ -93,6 +112,18 @@ function makeCircles(nrow, ncol, firstx, firsty, incrx, incry, r, randFactor) {
     }
   }
   return new Circles(circles);
+}
+
+function keyPressed() {
+  // C for "cicle"
+  if (keyCode == 67) {
+    showCirc *= -1;
+  }
+
+  // L for "line"
+  if (keyCode == 76) {
+    showLin *= -1;
+  }
 }
 
 function draw() {
