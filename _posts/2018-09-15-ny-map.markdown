@@ -1,0 +1,8 @@
+---
+layout: post
+title:  "NY County Map"
+date:   2018-09-15
+categories: post
+---
+
+[Link to the sketch]({% link sketches/ny_map/ny_map.md %})
