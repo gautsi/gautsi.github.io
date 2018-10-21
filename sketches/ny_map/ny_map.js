@@ -18,7 +18,7 @@ function drawMap(mapData) {
 
     fill(myLightColors[(mapData[i]["county_id"] % 6)]);
     rectMode(CENTER);
-    rect(x, y, 4, 4);
+    // rect(x, y, 4, 4);
 
     let min_y = map(mapData[i]["norm_min_new_test_lat_rank"], 0, 1, width - 10, 10);
     let max_y = map(mapData[i]["norm_max_new_test_lat_rank"], 0, 1, width - 10, 10);
@@ -36,5 +36,5 @@ function drawMap(mapData) {
 function draw() {
   background(myLightColors[0]);
   drawMap(nyUntangledMapData);
-  noLoop();
+  // noLoop();
 }
