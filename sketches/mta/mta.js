@@ -9,7 +9,7 @@ let cx;
 let cy;
 
 function preload() {
-  nyMap = loadImage("https://api.mapbox.com/styles/v1/mapbox/dark-v9/static/-74.01215,40.68105,9,0,0/400x400?access_token=pk.eyJ1IjoiZ2F1dGFzIiwiYSI6ImNqanhkNjA5cjEwcXkzcXJ6NjZ4YnZxczEifQ.rRu0vF_nhwx9XhWosCEFzw");
+  nyMap = loadImage(`https://api.mapbox.com/styles/v1/mapbox/dark-v9/static/-74.01215,40.68105,${zoom},0,0/400x400?access_token=pk.eyJ1IjoiZ2F1dGFzIiwiYSI6ImNqanhkNjA5cjEwcXkzcXJ6NjZ4YnZxczEifQ.rRu0vF_nhwx9XhWosCEFzw`);
   stopTimes = loadJSON("https://raw.githubusercontent.com/gautsi/gen-purpose-repo/master/mta/stop_times_sub_morn.json");
   for (let i = 0; i < Object.keys(stopTimes).length; i ++) {
     stopTimes[i]["active"] = 0;
@@ -90,15 +90,22 @@ function updateCars() {
   // }
 }
 
-// function keyPressed() {
-//  console.log(keyCode);
-//  if (keyCode == 65) {
-//    zoom += 10;
-//  }
-//  else if (keyCode == 90) {
-//    zoom -= 10;
-//  }
-//}
+function keyPressed() {
+ console.log(keyCode);
+ if (keyCode == 65) {
+   zoom += 0.1;
+   cx = mercX(clon);
+   cy = mercY(clat);
+
+ }
+ else if (keyCode == 90) {
+   zoom -= 0.1;
+   cx = mercX(clon);
+   cy = mercY(clat);
+ }
+ nyMap = loadImage(`https://api.mapbox.com/styles/v1/mapbox/dark-v9/static/-74.01215,40.68105,${zoom},0,0/400x400?access_token=pk.eyJ1IjoiZ2F1dGFzIiwiYSI6ImNqanhkNjA5cjEwcXkzcXJ6NjZ4YnZxczEifQ.rRu0vF_nhwx9XhWosCEFzw`);
+
+}
 
 function colorAlpha(aColor, alpha) {
   var c = color(aColor);
