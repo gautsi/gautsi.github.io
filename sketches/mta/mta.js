@@ -1,10 +1,16 @@
-let height = 500;
-let width = 500;
-let currTime = 43200;
+let h = 400;
+let w = 400;
+let currTime = 0;
 let currCars = [];
+let zoom = 9;
+let clon = -74.01215;
+let clat = 40.68105;
+let cx;
+let cy;
 
 function preload() {
-  stopTimes = loadJSON("https://raw.githubusercontent.com/gautsi/gen-purpose-repo/master/mta/stop_times_sub.json");
+  nyMap = loadImage("https://api.mapbox.com/styles/v1/mapbox/dark-v9/static/-74.01215,40.68105,9,0,0/400x400?access_token=pk.eyJ1IjoiZ2F1dGFzIiwiYSI6ImNqanhkNjA5cjEwcXkzcXJ6NjZ4YnZxczEifQ.rRu0vF_nhwx9XhWosCEFzw");
+  stopTimes = loadJSON("https://raw.githubusercontent.com/gautsi/gen-purpose-repo/master/mta/stop_times_sub_morn.json");
   for (let i = 0; i < Object.keys(stopTimes).length; i ++) {
     stopTimes[i]["active"] = 0;
   }
@@ -12,10 +18,29 @@ function preload() {
 
 function setup() {
   console.log("preload done s");
-  let myCanvas = createCanvas(height, width);
+  myCanvas = createCanvas(w, h);
   myCanvas.parent('mta_sketch');
+  imageMode(CENTER);
+
+  cx = mercX(clon);
+  cy = mercY(clat);
+
   setTimeout(updateCars, 5);
 }
+
+function mercX(lon) {
+  var a = (256/PI) * pow(2, zoom);
+  var b = radians(lon) + PI;
+  return a * b;
+}
+
+function mercY(lat) {
+  var a = (256/PI) * pow(2, zoom);
+  var b = tan(PI/4 + radians(lat)/2);
+  var c = PI - log(b);
+  return a * c;
+}
+
 
 function updateCars() {
   for (let i = 0; i < Object.keys(stopTimes).length; i ++) {
@@ -65,26 +90,42 @@ function updateCars() {
   // }
 }
 
+// function keyPressed() {
+//  console.log(keyCode);
+//  if (keyCode == 65) {
+//    zoom += 10;
+//  }
+//  else if (keyCode == 90) {
+//    zoom -= 10;
+//  }
+//}
+
+function colorAlpha(aColor, alpha) {
+  var c = color(aColor);
+  return color('rgba(' +  [red(c), green(c), blue(c), alpha].join(',') + ')');
+}
+
 
 function draw() {
-  background(myLightColors[0]);
-  fill(myDarkColors[1]);
+  // background(myLightColors[0]);
+  translate(width / 2, height / 2);
+  image(nyMap, 0, 0);
   let hour = Math.floor(currTime / 3600);
   let min = Math.floor((currTime - hour * 3600) / 60);
   let sec = currTime - hour * 3600 - min * 60;
-  text(String(hour).padStart(2, "0") + ":" + String(min).padStart(2, "0") + ":" + String(sec).padStart(2, "0"), 20, 20);
+  fill(myDarkColors[1]);
+  text(String(hour).padStart(2, "0") + ":" + String(min).padStart(2, "0") + ":" + String(sec).padStart(2, "0"), 20 - width / 2, 20 - height / 2);
 
   noStroke();
   for (let i = 0; i < Object.keys(stopTimes).length; i ++) {
 
     if (stopTimes[i]["active"]) {
-        fill("#" + stopTimes[i]["route_color"]);
-        ellipse(
-          map(stopTimes[i]["curr_lon"], -74.253, -73.754, 0, width),
-          map(stopTimes[i]["curr_lat"], 40.511, 40.905, height, 0),
-          4,
-          4)
+        fill(colorAlpha("#" + stopTimes[i]["route_color"], 1));
+
+        // ellipse(map(stopTimes[i]["curr_lon"], -74.253, -73.754, 0 - zoom, width + zoom), map(stopTimes[i]["curr_lat"], 40.511, 40.905, height + zoom, 0 - zoom), 4, 4)
+        ellipse(mercX(stopTimes[i]["curr_lon"]) - cx, mercY(stopTimes[i]["curr_lat"]) - cy, 4, 4);
+        // console.log(mercX(stopTimes[i]["curr_lon"]) - cx, mercY(stopTimes[i]["curr_lat"]) - cy);
       }
     }
-  // noLoop();
+  //if (currTime == 20){noLoop();}
 }
