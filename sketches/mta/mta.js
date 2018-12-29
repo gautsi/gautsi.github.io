@@ -10,7 +10,7 @@ let cy;
 
 function preload() {
   nyMap = loadImage(`https://api.mapbox.com/styles/v1/mapbox/dark-v9/static/-74.01215,40.68105,${zoom},0,0/400x400?access_token=pk.eyJ1IjoiZ2F1dGFzIiwiYSI6ImNqanhkNjA5cjEwcXkzcXJ6NjZ4YnZxczEifQ.rRu0vF_nhwx9XhWosCEFzw`);
-  stopTimes = loadJSON("https://raw.githubusercontent.com/gautsi/gen-purpose-repo/master/mta/stop_times_sub_morn.json");
+  stopTimes = loadJSON("https://raw.githubusercontent.com/gautsi/gen-purpose-repo/master/mta/stop_times_sub_morn_ver2.json");
   for (let i = 0; i < Object.keys(stopTimes).length; i ++) {
     stopTimes[i]["active"] = 0;
   }
@@ -49,7 +49,7 @@ function updateCars() {
       if (Number(stopTimes[i]["min_arrive"]) == currTime) {
         stopTimes[i]["curr_stop_sequence"] = stopTimes[i]["min_stop_sequence"];
         currStop = stopTimes[i]["stops"][stopTimes[i]["curr_stop_sequence"]];
-        stopTimes[i]["next_arrive"] = currStop["next_arrive"];
+        stopTimes[i]["next_check"] = currStop["mod_depart"];
         stopTimes[i]["curr_lat"] = currStop["stop_lat"];
         stopTimes[i]["curr_lon"] = currStop["stop_lon"];
         if (stopTimes[i]["min_stop_sequence"] == stopTimes[i]["max_stop_sequence"]) {
@@ -57,24 +57,40 @@ function updateCars() {
           stopTimes[i]["curr_lon_vel"] = 0;
         }
         else {
-          stopTimes[i]["curr_lat_vel"] = (currStop["next_stop_lat"] - currStop["stop_lat"]) / (currStop["next_arrive"] - currStop["arrive"]);
-          stopTimes[i]["curr_lon_vel"] = (currStop["next_stop_lon"] - currStop["stop_lon"]) / (currStop["next_arrive"] - currStop["arrive"]);
+          if (currTime < currStop["mod_depart"]) {
+              stopTimes[i]["curr_lat_vel"] = 0;
+              stopTimes[i]["curr_lon_vel"] = 0;
+          }
+          else {
+            stopTimes[i]["curr_lat_vel"] = (currStop["next_stop_lat"] - currStop["stop_lat"]) / (currStop["next_arrive"] - currStop["mod_depart"]);
+            stopTimes[i]["curr_lon_vel"] = (currStop["next_stop_lon"] - currStop["stop_lon"]) / (currStop["next_arrive"] - currStop["mod_depart"]);
+          }
         }
       }
       else {
-        if (stopTimes[i]["next_arrive"] == currTime) {
-          stopTimes[i]["curr_stop_sequence"] = String(Number(stopTimes[i]["curr_stop_sequence"]) + 1);
-          currStop = stopTimes[i]["stops"][stopTimes[i]["curr_stop_sequence"]];
-          stopTimes[i]["next_arrive"] = currStop["next_arrive"];
-          // stopTimes[i]["curr_lat"] = currStop["stop_lat"];
-          // stopTimes[i]["curr_lon"] = currStop["stop_lon"];
+        if (stopTimes[i]["next_check"] == currTime) {
+          if (stopTimes[i]["next_check"] == stopTimes[i]["stops"][stopTimes[i]["curr_stop_sequence"]]["next_arrive"]) {
+            stopTimes[i]["curr_stop_sequence"] = String(Number(stopTimes[i]["curr_stop_sequence"]) + 1);
+            currStop = stopTimes[i]["stops"][stopTimes[i]["curr_stop_sequence"]];
+            stopTimes[i]["next_check"] = currStop["mod_depart"];
+          }
+          else if (stopTimes[i]["next_check"] == stopTimes[i]["stops"][stopTimes[i]["curr_stop_sequence"]]["mod_depart"]) {
+            currStop = stopTimes[i]["stops"][stopTimes[i]["curr_stop_sequence"]];
+            stopTimes[i]["next_check"] = currStop["next_arrive"];
+          }
           if (stopTimes[i]["curr_stop_sequence"] == stopTimes[i]["max_stop_sequence"]) {
             stopTimes[i]["curr_lat_vel"] = 0;
             stopTimes[i]["curr_lon_vel"] = 0;
           }
           else {
-            stopTimes[i]["curr_lat_vel"] = (currStop["next_stop_lat"] - currStop["stop_lat"]) / (currStop["next_arrive"] - currStop["arrive"]);
-            stopTimes[i]["curr_lon_vel"] = (currStop["next_stop_lon"] - currStop["stop_lon"]) / (currStop["next_arrive"] - currStop["arrive"]);
+            if (currTime < currStop["mod_depart"]) {
+                stopTimes[i]["curr_lat_vel"] = 0;
+                stopTimes[i]["curr_lon_vel"] = 0;
+            }
+            else {
+              stopTimes[i]["curr_lat_vel"] = (currStop["next_stop_lat"] - currStop["stop_lat"]) / (currStop["next_arrive"] - currStop["mod_depart"]);
+              stopTimes[i]["curr_lon_vel"] = (currStop["next_stop_lon"] - currStop["stop_lon"]) / (currStop["next_arrive"] - currStop["mod_depart"]);
+            }
           }
         }
         else {
