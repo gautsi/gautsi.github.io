@@ -5,8 +5,6 @@ date:   2019-02-22
 categories: post
 ---
 
-# Testing scripting on blog
-
 <svg id="InterestChart"></svg>
 
 
@@ -24,5 +22,3 @@ categories: post
 - [ ] best bid best ask lines
 - remaining colors
   - [ ] most colors too light: what is the distribution of remaining values?
-
-[Link to the visualization]({% link sketches/gemini/gemini.html %})
