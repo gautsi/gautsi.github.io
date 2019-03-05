@@ -4,9 +4,11 @@ function loadData() {
     return Promise.all([
       d3.json("https://raw.githubusercontent.com/gautsi/gen-purpose-repo/master/gemini/gemini_interest.json"),
       d3.json("https://raw.githubusercontent.com/gautsi/gen-purpose-repo/master/gemini/gemini_trades.json"),
+      d3.json("https://raw.githubusercontent.com/gautsi/gen-purpose-repo/master/gemini/gemini_inside.json")
     ]).then(datasets => {
         store.interest = datasets[0];
         store.trades = datasets[1];
+        store.inside = datasets[2];
         return store;
     })
 }
@@ -47,7 +49,7 @@ function getInterestChartScales(interest, config) {
     let minPrice = d3.min(interest.map(a => +a.price_padded))
     let maxPrice = d3.max(interest.map(a => +a.price_padded))
 
-    let allPrices = [...Array(100 * maxPrice - 100 * minPrice).keys()].map((i) => {
+    let allPrices = [...Array(100 * maxPrice - 100 * minPrice + 1).keys()].map((i) => {
       let pr = (100 * maxPrice - i) / 100;
       let prStr = pr.toString();
       let prStrPad = prStr;
@@ -92,17 +94,18 @@ function getInterestChartScales(interest, config) {
       .domain([0, maxAskRem])
       .interpolator(d3.interpolateReds);
 
-    return { xScale, yScale, bidColorScale, askColorScale }
+    return { xScale, yScale, bidColorScale, askColorScale, allPrices, minTim, maxTim }
 }
 
-function drawBarsInterestChart(interest, trades, scales, config) {
+function drawBarsInterestChart(interest, trades, inside, scales, config) {
 
   console.log("test3")
 
 
-  let {margin, container} = config; // this is equivalent to 'let margin = config.margin; let container = config.container'
+  let { margin, container, bodyHeight, bodyWidth } = config;
+
   console.log("test4")
-  let {xScale, yScale, bidColorScale, askColorScale} = scales
+  let {xScale, yScale, bidColorScale, askColorScale, allPrices } = scales
 
   console.log("test5")
 
@@ -113,7 +116,21 @@ function drawBarsInterestChart(interest, trades, scales, config) {
       )
 
   console.log("test6")
-  let bars = body.selectAll(".bar").data(interest)
+  // draw background bars
+  let backBars = body.selectAll(".bar").data(allPrices.map(d => {return {"price": d}}));
+  console.log(allPrices.map(d => {return {"price": d}}).map(d => yScale(d.price)))
+
+  let newBackBars = backBars
+    .enter()
+    .append("rect")
+    .attr("height", yScale.bandwidth())
+    .attr("y", d => yScale(d.price))
+    .attr("x", 0)
+    .attr("width", bodyWidth)
+    .attr("fill", "#eeeeee");
+
+
+  let bars = body.selectAll(".bar").data(interest.filter(d => +d.remaining > 0))
 
   console.log("test7")
   let newBars = bars.enter().append("rect")
@@ -122,10 +139,10 @@ function drawBarsInterestChart(interest, trades, scales, config) {
         let p = d.price_padded
         return yScale(p)})
       .attr("x", (d) => xScale(d.time))
-      // .attr("width", 100)
+      //.attr("width", 100)
       .attr("width", (d) => xScale(d.next_tim ? d.next_time : xScale.domain()[1]) - xScale(d.time))
-      .attr("fill", (d) => +d.remaining > 0 ? (d.side === "bid" ? d3.schemeCategory10[0] : d3.schemeCategory10[1]) : "#bbbbbb")
-      // .attr("fill", (d) => +d.remaining > 0 ? d.side === "bid" ? bidColorScale(+d.remaining) : askColorScale(+d.remaining) : "#bbbbbb")
+      .attr("fill", (d) => +d.remaining > 0 ? (d.side === "bid" ? d3.schemeDark2[0] : d3.schemeDark2[1]) : "#eeeeee")
+      // .attr("fill", (d) => +d.remaining > 0 ? d.side === "bid" ? bidColorScale(+d.remaining) : askColorScale(+d.remaining) : "#000000")
 //      .on("mouseenter", function(d) { // <- this is the new code
 //         drawRoutes(d.AirlineID)//TODO: call the drawRoutes function passing the AirlineID id 'd'
 //         d3.select(this)
@@ -139,6 +156,7 @@ function drawBarsInterestChart(interest, trades, scales, config) {
 //   //TODO: In this listener, call drawRoutes(null), this will cause the function to remove all lines in the chart since there is no airline withe AirlineID == null.
 //   //TODO: change the fill color of the bar back to "#2a5599"
 
+  console.log("test8");
 
   let points = body.selectAll(".point").data(trades);
 
@@ -148,9 +166,70 @@ function drawBarsInterestChart(interest, trades, scales, config) {
     .attr("r", yScale.bandwidth())
     .attr("cy", d => yScale(d.price) + yScale.bandwidth() / 2)
     .attr("cx", d => xScale(d.time))
-    .attr("fill", d3.schemeCategory10[2])
+    .attr("stroke", d3.schemeDark2[2])
+    .attr("fill", "none");
 
-  return { bars, newBars, points, newPoints }
+  // add inside lines
+  let insideLine =  d3.line()
+    .curve(d3.curveStepAfter)
+    .x(d => xScale(d.time))
+    .y(d => yScale(d.inside_padded) + yScale.bandwidth() / 2);
+
+  let bestBidLineChart = body
+   .append("path")
+   .datum(inside.filter(d => d.side == "bid"))
+   .attr("class", "line")
+   .attr("fill", "none")
+   .style("stroke", d3.schemeDark2[0]);
+
+   bestBidLineChart.attr("d", insideLine);
+
+   let bestAskLineChart = body
+    .append("path")
+    .datum(inside.filter(d => d.side == "ask"))
+    .attr("class", "line")
+    .attr("fill", "none")
+    .style("stroke", d3.schemeDark2[1]);
+
+  bestAskLineChart.attr("d", insideLine);
+
+  // add last trade line
+  let tradeLine = d3.line()
+    .curve(d3.curveStepAfter)
+    .x(d => xScale(d.time))
+    .y(d => yScale(d.price));
+
+  let lastTradeLineChart = body
+   .append("path")
+   .datum(trades)
+   .attr("class", "line")
+   .attr("fill", "none")
+   .style("stroke", d3.schemeDark2[2]);
+
+  lastTradeLineChart.attr("d", tradeLine);
+
+  // add focus lines
+  let xFocusLine = body
+    .append("line")
+    .attr("stroke", "#aaaaaa")
+    .style("visibility", "hidden");
+
+  let overlay = body
+    .append("rect")
+    .attr("width", bodyWidth)
+    .attr("height", bodyHeight)
+    .attr("fill", "none")
+    .attr("pointer-events", "all")
+    .on("mousemove", function () {
+      xFocusLine
+        .style("visibility", "visible")
+        .attr("x1", d3.mouse(this)[0] - margin.left)
+        .attr("y1", d3.mouse(this)[1] - margin.top)
+        .attr("x2", d3.mouse(this)[0] - margin.left)
+        .attr("y2", bodyWidth);
+    });
+
+  return { bars, newBars, points, newPoints, backBars, newBackBars, insideLine, bestBidLineChart, bestAskLineChart, tradeLine, lastTradeLineChart }
 }
 
 function drawAxesInterestChart(interest, scales, config){
@@ -181,16 +260,16 @@ function drawAxesInterestChart(interest, scales, config){
 }
 
 function addZoom(config, scales, axes, join) {
-  let { bodyHeight, bodyWidth, container } = config;
-  let { xScale, yScale } = scales;
+  let { height, width, bodyHeight, bodyWidth, container } = config;
+  let { xScale, yScale, minTim, maxTim } = scales;
   let { axisX, axisY, gX, gY } = axes;
-  let { bars, newBars, points, newPoints } = join;
+  let { bars, newBars, points, newPoints, backBars, newBackBars, insideLine, bestBidLineChart, bestAskLineChart, tradeLine, lastTradeLineChart } = join;
 
   let zoom = d3.zoom()
+    .scaleExtent([1, 40])
+    .translateExtent([[0, 0], [width, height]]);
 
   zoom.on("zoom", function() {
-
-    console.log(d3.event.transform);
 
     let newXScale = d3.event.transform.rescaleX(xScale);
     gX.call(axisX.scale(newXScale));
@@ -203,6 +282,13 @@ function addZoom(config, scales, axes, join) {
 
     gY.call(axisY.tickValues(newYTickValues));
 
+    backBars.merge(newBackBars)
+    .attr("height", yScale.bandwidth())
+    .attr("y", d => yScale(d.price))
+    .attr("x", newXScale(minTim))
+    .attr("width", newXScale(maxTim) - newXScale(minTim))
+    //.attr("fill", "#aaaaaa");
+
     bars.merge(newBars)
       .attr("height", yScale.bandwidth())
       .attr("y", (d) => {
@@ -210,12 +296,28 @@ function addZoom(config, scales, axes, join) {
         return yScale(p)})
       .attr("x", (d) => newXScale(d.time))
       // .attr("width", 100)
-      .attr("width", (d) => newXScale(d.next_tim ? d.next_time : newXScale.domain()[1]) - newXScale(d.time))
+      .attr("width", (d) => newXScale(d.next_tim ? d.next_time : newXScale.domain()[1]) - newXScale(d.time));
 
     points.merge(newPoints)
       .attr("r", yScale.bandwidth())
       .attr("cy", d => yScale(d.price) + yScale.bandwidth() / 2)
-      .attr("cx", d => newXScale(d.time))
+      .attr("cx", d => newXScale(d.time));
+
+    let insideLine =  d3.line()
+      .curve(d3.curveStepAfter)
+      .x(d => newXScale(d.time))
+      .y(d => yScale(d.inside_padded) + yScale.bandwidth() / 2);
+
+    bestBidLineChart.attr("d", insideLine);
+
+    bestAskLineChart.attr("d", insideLine);
+
+    let tradeLine =  d3.line()
+      .curve(d3.curveStepAfter)
+      .x(d => newXScale(d.time))
+      .y(d => yScale(d.price));
+
+    lastTradeLineChart.attr("d", tradeLine);
 
   });
 
@@ -223,13 +325,13 @@ function addZoom(config, scales, axes, join) {
 }
 
 
-function drawInterestChart(interest, trades) {
+function drawInterestChart(interest, trades, inside) {
   console.log("a")
   let config = getInterestChartConfig();
   console.log("b")
   let scales = getInterestChartScales(interest, config);
   console.log("c")
-  let join = drawBarsInterestChart(interest, trades, scales, config);
+  let join = drawBarsInterestChart(interest, trades, inside, scales, config);
   console.log("d")
   let axes = drawAxesInterestChart(interest, scales, config);
   console.log("e")
@@ -239,15 +341,19 @@ function drawInterestChart(interest, trades) {
 
 function showData() {
   store.interest.forEach((d) => {
-    d.time = new Date(d.fixed_timestampms)
-    d.next_time = new Date(d.next_tim)
+    d.time = new Date(d.fixed_timestampms);
+    d.next_time = new Date(d.next_tim);
   });
 
   store.trades.forEach((d) => {
-    d.time = new Date(d.timestampms)
+    d.time = new Date(d.timestampms);
   });
 
-  drawInterestChart(store.interest, store.trades)
+  store.inside.forEach(d => {
+    d.time = new Date(d.ref_tim);
+  });
+
+  drawInterestChart(store.interest, store.trades, store.inside);
 }
 
 loadData().then(showData);

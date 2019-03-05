@@ -13,12 +13,19 @@ categories: post
 
 ### To do
 - [ ] tooltips (scroll over time and price)
-- [ ] plot trades
-- [ ] add in initial interest
+- [x] plot trades
+- add in initial interest
+  - [x] initial nonzero interest
+  - [x] initial zero interest
 - [x] y axis ticks: show every 2^n, depends on zoom level
-- [ ] max pan
-- [ ] max/min zoom
+- [x] max pan
+- [x] max/min zoom
 - [x] move viz to blog
-- [ ] best bid best ask lines
+- [x] best bid best ask lines
+- [x] last trade line
+  - ~~tried it out, makes viz too cluttered~~
+- [ ] cumulative interest plot
+- [ ] [brush zoom](https://bl.ocks.org/mbostock/f48fcdb929a620ed97877e4678ab15e6)
 - remaining colors
   - [ ] most colors too light: what is the distribution of remaining values?
+  - [x] use usual color scheme (Dark2)
