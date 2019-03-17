@@ -12,4 +12,5 @@ categories: post
 <script src="/sketches/nyc_pa_enr/nyc_pa_enr.js"></script>
 
 ### To do
-- [ ] scrape data from NYC BOE election night [results](https://web.enrboenyc.us/CD22509ADI0.html)
+- [x] scrape data from NYC BOE election night [results](https://web.enrboenyc.us/CD22509ADI0.html)
+- [ ] get assembly district (and/or election district) geojson
