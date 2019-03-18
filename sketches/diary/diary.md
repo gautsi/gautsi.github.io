@@ -45,3 +45,11 @@ This day was very cold, maybe the coldest of winter up to that day, and it was a
 ### 03/15/19
 
 Once finally in the ER, we were processed at the front desk and shown into room in the pediatric wing. As vitals and weight were checked and we were asked basic questions about his condition and birth. In fact we would be asked several times the exact time of his birth, 10:40 PM, as his bilyrubin levels needed to be compared against a baseline for his number of hours to acertain risk. Once initial steps were done, the ER staff left to prepare the test and we had a moment to breath and step back. We felt the strain of our anxiety wear on our bodies and minds. We began to think about what could happen next, and what we would do. If A needed to stay for treatment, where would we stay? How would we feed A, and how would we eat? Would we be allowed to stay with him in his room, or at least in the waiting room? Or should we get a hotel room nearby, and come to the ER every few hours to feed A? Perhaps I could venture out into cold night to find us food at some point. Our fatigue, helplessness and unconditional responsibility to A gave us a kind of grim resolve to make work whatever we needed to do, and survive until the hoped-for time when the danger had passed, and we were all back home again. That particular danger did pass, but at that point I surpressed the wonder that it ever would, and now I wonder if the life of a parent swings from one danger to the next.
+
+### 03/18/19
+
+As two month birthday was yesterday. We celebrated with a picture with a board that says "All About A, start of month 3, 3.17.19", and with the making and eating of a lemon blueberry cake that came out quite well. Our friend P had brought the cake when she visited last week and shared the recipe.
+
+One of As new tricks is pulling off my glasses when I get too close to his face 
+
+ 
