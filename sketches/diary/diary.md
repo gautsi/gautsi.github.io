@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ---
 layout: page
 title:  "Diary"
@@ -108,3 +107,5 @@ Once finally in the ER, we were processed at the front desk and shown into room 
 As two month birthday was yesterday. We celebrated with pictures of A with a sign that said "All About A, Start of Week Three, 3.17.19" and with the making and eating of a lemon blueberry cake that our friend P had brought over when she visited last week (or two weeks ago) and shared with us the [recipe](https://www.rhiansrecipes.com/gluten-free-vegan-lemon-blueberry-cake/).
 
 One of As new tricks is pulling off my glasses when I get too close to his face.
+
+At the ER, the staff had a hard time getting enough blood from As heel. They pricked him at least five times, trying to get a steady flow of blood, but all they would get were drops. The vial they had to fill seemed unreasonably large. As they squeezed As heel to draw the drops and scraped the heel with the vial to collect the blood, A screamed and cries and tried to break free. I held his legs as S tried to calm him by talking to him close to his face. I wonder now if in the tension of the momemt I held his leg too tight and restricted the flow. Once the staff finally had enough in their vials and left and A with band aids on both heels and drying blood on his feet and legs started to calm, we waited in the room, all three huddled together on the bed in the dark, for the result and the plan. It was our first moment of any peace since we were home that morning. It must have been close to 7 at that point, and we hadn't eaten since noon. S had breastfeed A twice already since we left home, once at the doctor's office and once at the ER, and we laughed about our worries that morning of breastfeeding in public.
