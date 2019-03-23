@@ -1,0 +1,15 @@
+---
+layout: post
+title:  "NYS Counties Cartogram Part 1"
+date:   2019-03-23
+categories: post
+---
+
+<div id="carto" style="height: 400px; width:400px; position:relative;" ></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.8/p5.min.js"></script>
+<script src='/sketches/my_colors.js' type="text/javascript"></script>
+<script src='/sketches/my_functions.js' type="text/javascript"></script>
+<script src="/sketches/carto/carto.js"></script>
+
+### To do
