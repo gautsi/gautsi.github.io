@@ -7,10 +7,9 @@ function makeNodes(num) {
     let posRandFunc = d3.randomUniform(0, 300);
     let sizeRandFunc = d3.randomUniform(50, 100);
     return {
-      "x": posRandFunc(),
-      "y": posRandFunc(),
-      "w": sizeRandFunc(),
-      "h": sizeRandFunc()
+      "pos": [posRandFunc(), posRandFunc()],
+      "size": [sizeRandFunc(), sizeRandFunc()],
+      "v": [0, 0]
       }
   });
 }
@@ -68,15 +67,41 @@ function drawCarto(config, data) {
 
   nodes.enter()
     .append('rect')
-    .attr("x", d => d.x)
-    .attr("y", d => d.y)
-    .attr("width", d => d.w)
-    .attr("height", d => d.h)
+    .attr("x", d => d.pos[0])
+    .attr("y", d => d.pos[1])
+    .attr("width", d => d.size[0])
+    .attr("height", d => d.size[1])
     .attr("stroke-width", 2)
     .attr("stroke", d3.schemeDark2[1])
     .attr("fill", "none")
 
   nodes.exit().remove();
+}
+
+function eltAdd(v1, v2) {
+  return v1.map((p, i) => p + v2[i]);
+}
+
+function eltMult(v1, s) {
+  return v1.map(p => p * s);
+}
+
+
+function updateNodes(data) {
+  data.nodes.forEach(d => {
+    data.nodes.forEach(d2 => {
+      let overlap = [0, 1]
+        .map(i => (d.pos[i] <= (d2.pos[i] + d2.size[i]) & (d.pos[i] + d.size[i]) >= d2.pos[i]))
+        .reduce((a, b) => a & b);
+      let vAdd = overlap ? eltAdd(d.pos, eltMult(d2.pos, -1)) : [0, 0];
+      d.v = eltAdd(d.v, eltMult(vAdd, 0.001));
+    });
+
+    // friction
+    d.v = eltAdd(d.v, eltMult(d.v, -0.2));
+
+    d.pos = eltAdd(d.pos, d.v);
+  });
 
 }
 
@@ -85,10 +110,7 @@ function showData(data) {
   drawCarto(config, data);
 
   d3.interval(function() {
-    data.nodes = data.nodes.map(d => {
-      d.x += 1;
-      return d;
-    });
+    updateNodes(data);
     drawCarto(config, data);
   });
 }
