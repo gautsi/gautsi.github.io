@@ -5,6 +5,20 @@ date:   2019-03-23
 categories: post
 ---
 
+Last year the New York Times published this image to represent election results for a New York State race (from [here](https://www.nytimes.com/interactive/2018/09/13/us/elections/100000006097483.app.html?nytapp=true)):
+
+![Map]({{ "/assets/nyt_nys_ag_dp_2018_map_032619.png" | absolute_url }})
+
+I don't think this map effectively communicates the results of the election. The visual marks are areas that accurately represent the geographic shape of NYS counties and have color corresponding to the candidate that got the most votes in the county. This means the total color area for a candidate is the total county area of counties that the candidate won. So on first impression, it seems as if this election was a close race between Teachout and Maloney with James a distant third, when in fact James won. The number or total area of counties won is not so meaningful in a statewide popular vote election such as this, because (perhaps among other things)
+- county area is not necessarily proportional to county population and
+- votes for a candidate in a county the candidate
+lost still count for the candidate in the statewide popular vote, so it's informative to know who came in second (and third) and by how much.
+
+The population issue is particularly a problem for representations of New York State where some of the smallest counties by area are some of the largest by population (for example the New York City counties like Queens and Kings) and vice versa (e.g. Hamilton). From the NYT map one sees that James was the highest vote getter in the populous downstate counties (all except Manhattan which Teachout won, though you can barely see this on the map).
+
+This got me thinking about representations of things like NYS counties that better communicate population, and beyond that better election maps. We can represent the counties and population with a bar graph:
+
+
 d3
 
 <div id="carto2" style="height: 400px; width:400px; position:relative;" >
