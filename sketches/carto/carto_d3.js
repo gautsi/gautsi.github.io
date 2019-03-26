@@ -1,11 +1,12 @@
 let store = {};
+let ttlVel = [];
 
 let numNodes = 10;
 
 function makeNodes(num) {
   return [...Array(num).keys()].map(i => {
     let posRandFunc = d3.randomUniform(0, 300);
-    let sizeRandFunc = d3.randomUniform(50, 100);
+    let sizeRandFunc = d3.randomUniform(50, 80);
     return {
       "pos": [posRandFunc(), posRandFunc()],
       "size": [sizeRandFunc(), sizeRandFunc()],
@@ -46,9 +47,7 @@ function getCartoScales(data) {
 
 }
 
-
-function drawCarto(config, data) {
-
+function drawBackground(config) {
   let { container, width, height } = config;
 
   // draw background
@@ -58,12 +57,16 @@ function drawCarto(config, data) {
     .attr("y", 0)
     .attr("width", width)
     .attr("height", height)
-    .attr("fill", d3.schemeSet2[0])
+    .attr("fill", d3.schemeSet2[0]);
+}
 
+
+function drawCarto(config, data, color = d3.schemeDark2[1], fill = "none") {
+  let { container, width, height } = config;
 
   let nodes = container
     .selectAll("nodes")
-    .data(data.nodes)
+    .data(data.nodes);
 
   nodes.enter()
     .append('rect')
@@ -72,8 +75,8 @@ function drawCarto(config, data) {
     .attr("width", d => d.size[0])
     .attr("height", d => d.size[1])
     .attr("stroke-width", 2)
-    .attr("stroke", d3.schemeDark2[1])
-    .attr("fill", "none")
+    .attr("stroke", color)
+    .attr("fill", fill);
 
   nodes.exit().remove();
 }
@@ -86,32 +89,62 @@ function eltMult(v1, s) {
   return v1.map(p => p * s);
 }
 
+function dist(v1, v2) {
+  return Math.sqrt([0, 1].map(i => Math.pow(v1[i] - v2[i], 2)).reduce((a, b) => a + b));
+}
+
 
 function updateNodes(data) {
+  let ttlVel = 0;
   data.nodes.forEach(d => {
+    let relPos = [];
     data.nodes.forEach(d2 => {
+      // add relative position
+      relPos.push({"rel_pos": eltAdd(d2.pos, eltMult(d.pos, -1))});
+
+      // check overlap
       let overlap = [0, 1]
         .map(i => (d.pos[i] <= (d2.pos[i] + d2.size[i]) & (d.pos[i] + d.size[i]) >= d2.pos[i]))
         .reduce((a, b) => a & b);
+
       let vAdd = overlap ? eltAdd(d.pos, eltMult(d2.pos, -1)) : [0, 0];
+
       d.v = eltAdd(d.v, eltMult(vAdd, 0.001));
     });
+
+    // move closer to closest neighbors
+    let attractions = relPos
+      .sort((a, b) => dist(a.rel_pos, [0, 0]) - dist(b.rel_pos, [0, 0]))
+      .slice(0, 4);
+
+    console.log(dist(attractions[1].rel_pos, [0, 0]));
+    let attraction = dist(attractions[1].rel_pos, [0, 0]) > 80 ? attractions.map(i => eltMult(i.rel_pos, 0.0001)).reduce(eltAdd) : [0, 0];
+
+    d.v = eltAdd(d.v, attraction);
 
     // friction
     d.v = eltAdd(d.v, eltMult(d.v, -0.2));
 
     d.pos = eltAdd(d.pos, d.v);
+    ttlVel += dist(d.v, [0, 0]);
   });
-
+  return ttlVel;
 }
 
 function showData(data) {
   let config = getCartoConfig();
-  drawCarto(config, data);
+  let origData = {"nodes": JSON.parse(JSON.stringify(data.nodes))};
 
-  d3.interval(function() {
-    updateNodes(data);
-    drawCarto(config, data);
+  let moveTimer = d3.timer(function(elapsed) {
+    let currTtlVel = updateNodes(data);
+    if (currTtlVel < 0.001 | elapsed > 100000) {
+      moveTimer.stop();
+      console.log("stopped");
+    } else {
+      drawBackground(config);
+      drawCarto(config, origData, color = d3.schemeSet2[1], fill = d3.schemeSet2[1]);
+      drawCarto(config, data, color = d3.schemeDark2[1], fill = "none");
+    }
   });
 }
 
