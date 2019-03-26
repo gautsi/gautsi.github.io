@@ -16,7 +16,25 @@ lost still count for the candidate in the statewide popular vote, so it's inform
 
 The population issue is particularly a problem for representations of New York State where some of the smallest counties by area are some of the largest by population (for example the New York City counties like Queens and Kings) and vice versa (e.g. Hamilton). From the NYT map one sees that James was the highest vote getter in the populous downstate counties (all except Manhattan which Teachout won, though you can barely see this on the map).
 
-This got me thinking about representations of things like NYS counties that better communicate population, and beyond that better election maps. We can represent the counties and population with a bar graph:
+This got me thinking about representations of things like NYS counties that better communicate population, and beyond that better election maps. We can represent the counties and population with a bar chart:
+
+
+<div id="bar1" style="height: 400px; width:400px; position:relative;" >
+</div>
+
+And then add in vote counts for each candidate as stacked bars:
+
+
+<div id="bar2" style="height: 400px; width:400px; position:relative;" >
+</div>
+
+This chart better shows the popular vote count for each candidate by county and for the state overall, but loses all the geographic meaning that the map had. For example, we can't tell from the bar chart as the NYT map seems to show that Maloney won many votes in the western counties, Teachout in the east and James in the south. Also, most of the high population counties (bars on the left of the chart) are in the lower part of the state, a fact not communicated by the bar chart. Can we visualize this election in way that both accurately represents the popular vote counts both statewide and countywide and communicates the general location of counties and their closeness to each other?
+
+Researching other ways to represent geographic objects brought me to the concept of a cartogram. According to Wikipedia, a cartogram is a ...
+
+There are many different ways to choose and organize the marks in a cartogram. Here is a paper that looks at various methods and compares by expressiveness and effectiveness of communicating geographic and other values...
+
+For a cartogram of the election, the shape of a county didn't need preserving but rather its position in the state and relative to other counties. 
 
 
 d3
