@@ -48,9 +48,12 @@ d3
 <script src="https://d3js.org/d3.v5.min.js"></script>
 <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
 
+<script src="/sketches/carto/counties_bar.js"></script>
 <script src="/sketches/carto/carto_d3.js"></script>
 
 ### Notes
+
+- votes are from [here](https://www.elections.ny.gov/2018ElectionResults.html)
 
 p5
 

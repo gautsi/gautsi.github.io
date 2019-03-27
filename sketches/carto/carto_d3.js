@@ -140,7 +140,6 @@ function showData(data) {
 
   let moveTimer = d3.timer(function(elapsed) {
     let currTtlVel = updateNodes(data);
-    console.log(currTtlVel);
     if (elapsed > 100000) {
       moveTimer.stop();
     } else if (currTtlVel < 0.5) {
