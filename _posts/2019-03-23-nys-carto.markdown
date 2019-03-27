@@ -7,7 +7,7 @@ categories: post
 
 Last year the New York Times published this image to represent election results for a New York State race (from [here](https://www.nytimes.com/interactive/2018/09/13/us/elections/100000006097483.app.html?nytapp=true)):
 
-![Map]({{ "/assets/nyt_nys_ag_dp_2018_map_032619.png" | absolute_url }})
+<img src="/assets/nyt_nys_ag_dp_2018_map_032619.png" height="50%" width="50%" border="1">
 
 I don't think this map effectively communicates the results of the election. The visual marks are areas that accurately represent the geographic shape of NYS counties and have color corresponding to the candidate that got the most votes in the county. This means the total color area for a candidate is the total county area of counties that the candidate won. So on first impression, it seems as if this election was a close race between Teachout and Maloney with James a distant third, when in fact James won. The number or total area of counties won is not so meaningful in a statewide popular vote election such as this, because (perhaps among other things)
 - county area is not necessarily proportional to county population and
@@ -34,7 +34,7 @@ Researching other ways to represent geographic objects brought me to the concept
 
 There are many different ways to choose and organize the marks in a cartogram. Here is a paper that looks at various methods and compares by expressiveness and effectiveness of communicating geographic and other values...
 
-For a cartogram of the election, the shape of a county didn't need preserving but rather its position in the state and relative to other counties. 
+For a cartogram of the election, the shape of a county didn't need preserving but rather its position in the state and relative to other counties.
 
 
 d3

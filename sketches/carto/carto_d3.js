@@ -109,7 +109,7 @@ function updateNodes(data) {
 
       let vAdd = overlap ? eltAdd(d.pos, eltMult(d2.pos, -1)) : [0, 0];
 
-      d.v = eltAdd(d.v, eltMult(vAdd, 0.001));
+      d.v = eltAdd(d.v, eltMult(vAdd, 0.01));
     });
 
     // move closer to closest neighbors
@@ -117,8 +117,7 @@ function updateNodes(data) {
       .sort((a, b) => dist(a.rel_pos, [0, 0]) - dist(b.rel_pos, [0, 0]))
       .slice(0, 4);
 
-    console.log(dist(attractions[1].rel_pos, [0, 0]));
-    let attraction = dist(attractions[1].rel_pos, [0, 0]) > 80 ? attractions.map(i => eltMult(i.rel_pos, 0.0001)).reduce(eltAdd) : [0, 0];
+    let attraction = dist(attractions[1].rel_pos, [0, 0]) > 80 ? attractions.map(i => eltMult(i.rel_pos, 0.001)).reduce(eltAdd) : [0, 0];
 
     d.v = eltAdd(d.v, attraction);
 
@@ -131,18 +130,25 @@ function updateNodes(data) {
   return ttlVel;
 }
 
+function deepCopyData(data) {
+  return {"nodes": JSON.parse(JSON.stringify(data.nodes))};
+}
+
 function showData(data) {
   let config = getCartoConfig();
-  let origData = {"nodes": JSON.parse(JSON.stringify(data.nodes))};
+  let origData = deepCopyData(data);
 
   let moveTimer = d3.timer(function(elapsed) {
     let currTtlVel = updateNodes(data);
-    if (currTtlVel < 0.001 | elapsed > 100000) {
+    console.log(currTtlVel);
+    if (elapsed > 100000) {
       moveTimer.stop();
-      console.log("stopped");
+    } else if (currTtlVel < 0.5) {
+      data.nodes = makeNodes(numNodes);
+      origData = deepCopyData(data);
     } else {
       drawBackground(config);
-      drawCarto(config, origData, color = d3.schemeSet2[1], fill = d3.schemeSet2[1]);
+      drawCarto(config, origData, color = d3.schemeSet2[0], fill = d3.schemeSet2[1]);
       drawCarto(config, data, color = d3.schemeDark2[1], fill = "none");
     }
   });
