@@ -1,7 +1,7 @@
 let store = {};
 let ttlVel = [];
 
-let numNodes = 10;
+let numNodes = 2;
 
 function makeNodes(num) {
   return [...Array(num).keys()].map(i => {
@@ -85,8 +85,16 @@ function eltAdd(v1, v2) {
   return v1.map((p, i) => p + v2[i]);
 }
 
-function eltMult(v1, s) {
+function eltApply(v1, v2, func) {
+  return v1.map((p, i) => func(p, v2[i]));
+}
+
+function scaMult(v1, s) {
   return v1.map(p => p * s);
+}
+
+function eltSign(v, inv = false) {
+  return [0, 1].map(i => v[i] >= 0 ? (inv ? -1 : 1) : (inv ? 1 : -1));
 }
 
 function dist(v1, v2) {
@@ -97,32 +105,44 @@ function dist(v1, v2) {
 function updateNodes(data) {
   let ttlVel = 0;
   data.nodes.forEach(d => {
-    let relPos = [];
+    // array to store distances to other marks
+    // to be used to calculate attraction
+    let distTo = [];
     data.nodes.forEach(d2 => {
-      // add relative position
-      relPos.push({"rel_pos": eltAdd(d2.pos, eltMult(d.pos, -1))});
+      // store distance from d2 to d elementwise:
+      // first get difference in position
+      let currDistTo = eltAdd(d2.pos, scaMult(d.pos, -1));
+
+      // then account for width/height, reducing distance accordingly
+      currDistTo = eltAdd(currDistTo, eltApply(eltAdd(d.size, d2.size), eltSign(currDistTo, inv = true), (a, b) => a * b));
+
+      distTo.push({"dist_to": currDistTo});
 
       // check overlap
       let overlap = [0, 1]
         .map(i => (d.pos[i] <= (d2.pos[i] + d2.size[i]) & (d.pos[i] + d.size[i]) >= d2.pos[i]))
         .reduce((a, b) => a & b);
 
-      let vAdd = overlap ? eltAdd(d.pos, eltMult(d2.pos, -1)) : [0, 0];
+      let vAdd = overlap ? eltAdd(d.pos, scaMult(d2.pos, -1)) : [0, 0];
 
-      d.v = eltAdd(d.v, eltMult(vAdd, 0.01));
+      d.v = eltAdd(d.v, scaMult(vAdd, 0.01));
     });
 
-    // move closer to closest neighbors
-    let attractions = relPos
-      .sort((a, b) => dist(a.rel_pos, [0, 0]) - dist(b.rel_pos, [0, 0]))
-      .slice(0, 4);
+    // move closer to closest neighbors, if not already close
+    // check neighbors element-wise
+    let attractions = [0, 1].map(i => distTo.map(j => j.dist_to[i]).sort((a, b) => Math.abs(a) - Math.abs(b)).slice(1, 4));
 
-    let attraction = dist(attractions[1].rel_pos, [0, 0]) > 80 ? attractions.map(i => eltMult(i.rel_pos, 0.001)).reduce(eltAdd) : [0, 0];
+    // only move if not already very close in either dimension
+    let minDist = attractions.map(i => i[0]).reduce((a, b) => Math.min(a, b));
+
+
+    let attraction = attractions.map(i => i.map(j => j * 0.0001).reduce((a, b) => a + b));
+    console.log(distTo);
 
     d.v = eltAdd(d.v, attraction);
 
     // friction
-    d.v = eltAdd(d.v, eltMult(d.v, -0.2));
+    d.v = eltAdd(d.v, scaMult(d.v, -0.2));
 
     d.pos = eltAdd(d.pos, d.v);
     ttlVel += dist(d.v, [0, 0]);
@@ -142,9 +162,9 @@ function showData(data) {
     let currTtlVel = updateNodes(data);
     if (elapsed > 100000) {
       moveTimer.stop();
-    } else if (currTtlVel < 0.5) {
-      data.nodes = makeNodes(numNodes);
-      origData = deepCopyData(data);
+    // }  else if (currTtlVel < 0.5) {
+      // data.nodes = makeNodes(numNodes);
+      // origData = deepCopyData(data);
     } else {
       drawBackground(config);
       drawCarto(config, origData, color = d3.schemeSet2[0], fill = d3.schemeSet2[1]);
