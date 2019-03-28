@@ -1,17 +1,19 @@
 let store = {};
 let ttlVel = [];
 
-let numNodes = 2;
+let numNodes = 10;
 
 function makeNodes(num) {
   return [...Array(num).keys()].map(i => {
     let posRandFunc = d3.randomUniform(0, 300);
     let sizeRandFunc = d3.randomUniform(50, 80);
-    return {
+    let node = {
       "pos": [posRandFunc(), posRandFunc()],
       "size": [sizeRandFunc(), sizeRandFunc()],
       "v": [0, 0]
       }
+    node["center"] = eltAdd(node["pos"], scaMult(node["size"], 0.5));
+    return node;
   });
 }
 
@@ -111,10 +113,10 @@ function updateNodes(data) {
     data.nodes.forEach(d2 => {
       // store distance from d2 to d elementwise:
       // first get difference in position
-      let currDistTo = eltAdd(d2.pos, scaMult(d.pos, -1));
+      let currDistTo = eltAdd(d2.center, scaMult(d.center, -1));
 
       // then account for width/height, reducing distance accordingly
-      currDistTo = eltAdd(currDistTo, eltApply(eltAdd(d.size, d2.size), eltSign(currDistTo, inv = true), (a, b) => a * b));
+      currDistTo = [0, 1].map(i => (currDistTo[i] >= 0 ? 1 : -1) * Math.max(Math.abs(currDistTo[i]) - 0.5 * (d.size[i] + d2.size[i]), 0));
 
       distTo.push({"dist_to": currDistTo});
 
@@ -129,22 +131,20 @@ function updateNodes(data) {
     });
 
     // move closer to closest neighbors, if not already close
-    // check neighbors element-wise
-    let attractions = [0, 1].map(i => distTo.map(j => j.dist_to[i]).sort((a, b) => Math.abs(a) - Math.abs(b)).slice(1, 4));
+    let attractions = distTo.sort((a, b) => dist(a.dist_to, [0, 0]) - dist(b.dist_to, [0, 0])).slice(1, 4);
 
-    // only move if not already very close in either dimension
-    let minDist = attractions.map(i => i[0]).reduce((a, b) => Math.min(a, b));
+    // only move if not already very close in both dimensions
+    let maxMinDist = attractions[0].dist_to.map(Math.abs).reduce((a, b) => Math.max(a, b));
 
-
-    let attraction = attractions.map(i => i.map(j => j * 0.0001).reduce((a, b) => a + b));
-    console.log(distTo);
+    let attraction = maxMinDist > 2 ? attractions.map(i => i.dist_to).reduce((a, b) => scaMult(eltAdd(a, b), 0.01)) : [0, 0];
 
     d.v = eltAdd(d.v, attraction);
 
     // friction
-    d.v = eltAdd(d.v, scaMult(d.v, -0.2));
+    d.v = eltAdd(d.v, scaMult(d.v, -0.3));
 
     d.pos = eltAdd(d.pos, d.v);
+    d.center = eltAdd(d.center, d.v);
     ttlVel += dist(d.v, [0, 0]);
   });
   return ttlVel;
@@ -162,9 +162,9 @@ function showData(data) {
     let currTtlVel = updateNodes(data);
     if (elapsed > 100000) {
       moveTimer.stop();
-    // }  else if (currTtlVel < 0.5) {
-      // data.nodes = makeNodes(numNodes);
-      // origData = deepCopyData(data);
+    } else if (currTtlVel < 0.5) {
+      data.nodes = makeNodes(numNodes);
+      origData = deepCopyData(data);
     } else {
       drawBackground(config);
       drawCarto(config, origData, color = d3.schemeSet2[0], fill = d3.schemeSet2[1]);
