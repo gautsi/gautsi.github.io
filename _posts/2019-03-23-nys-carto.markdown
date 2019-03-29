@@ -19,13 +19,13 @@ The population issue is particularly a problem for representations of New York S
 This got me thinking about representations of things like NYS counties that better communicate population, and beyond that better election maps. We can represent the counties and population with a bar chart:
 
 
-<div id="bar1" style="height: 400px; width:400px; position:relative;" >
+<div id="bar1" style="position:relative;" >
 </div>
 
 And then add in vote counts for each candidate as stacked bars:
 
 
-<div id="bar2" style="height: 400px; width:400px; position:relative;" >
+<div id="bar2" style="position:relative;" >
 </div>
 
 This chart better shows the popular vote count for each candidate by county and for the state overall, but loses all the geographic meaning that the map had. For example, we can't tell from the bar chart as the NYT map seems to show that Maloney won many votes in the western counties, Teachout in the east and James in the south. Also, most of the high population counties (bars on the left of the chart) are in the lower part of the state, a fact not communicated by the bar chart. Can we visualize this election in way that both accurately represents the popular vote counts both statewide and countywide and communicates the general location of counties and their closeness to each other?
@@ -49,6 +49,7 @@ d3
 <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
 
 <script src="/sketches/carto/counties_bar.js"></script>
+<script src="/sketches/carto/counties_bar2.js"></script>
 <script src="/sketches/carto/carto_d3.js"></script>
 
 ### Notes
@@ -69,3 +70,4 @@ p5
 
 
 ### To do
+- [ ] follow https://observablehq.com/@d3/stacked-bar-chart to make a bar chart
