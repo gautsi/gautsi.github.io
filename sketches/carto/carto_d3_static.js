@@ -161,15 +161,12 @@ function showData(data) {
 
   let moveTimer = d3.timer(function(elapsed) {
     let currTtlVel = updateNodes(data);
-    if (elapsed > 100000) {
+    drawBackground(config);
+    drawCarto(config, origData, color = d3.schemeSet2[0], fill = d3.schemeSet2[1]);
+    drawCarto(config, data, color = d3.schemeDark2[1], fill = "none");
+
+    if (elapsed > 100000 | currTtlVel < 0.5) {
       moveTimer.stop();
-    } else if (currTtlVel < 0.5) {
-      data.nodes = makeNodes(numNodes);
-      origData = deepCopyData(data);
-    } else {
-      drawBackground(config);
-      drawCarto(config, origData, color = d3.schemeSet2[0], fill = d3.schemeSet2[1]);
-      drawCarto(config, data, color = d3.schemeDark2[1], fill = "none");
     }
   });
 }

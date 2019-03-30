@@ -19,7 +19,7 @@ function prepData2(data) {
     i["totalVotes"] = d3.sum(data["candidates"].map(c => i[c.split(" (DEM)")[0]]));
   });
 
-  data["candidatesFixed"] = data["candidates"].map(c => c.split(" (DEM)")[0]);
+  data["candidatesFixed"] = [1, 3, 0, 2].map(i => data["candidates"].map(c => c.split(" (DEM)")[0])[i]);
 
   data["votesStacked"] = d3.stack().keys(data["candidatesFixed"])(data.votes);
 }
@@ -35,11 +35,11 @@ function getBarConfig2() {
     }
     let bodyHeight = height - margin.top - margin.bottom
     let bodyWidth = width - margin.left - margin.right
-    let container = d3.select("#bar2").append("svg")
+    let container = d3.select("#bar2").attr("align","center").append("svg")
 
     container
-        .attr("width", width)
-        .attr("height", height)
+      .attr("width", width)
+      .attr("height", height)
 
     return { width, height, margin, bodyHeight, bodyWidth, container }
 }
@@ -61,10 +61,15 @@ function getBarScales2(config, data) {
 
   let colorScale = d3.scaleOrdinal()
     .domain(data.votesStacked.map(d => d.key))
-    .range([1, 2, 0, 3].map(i => d3.schemeSet1[i]))
+    .range([2, 3, 1, 0].map(i => d3.schemeSet1[i]))
     .unknown(grey2);
 
-  return { xScale, yScale, colorScale }
+  let legendScale = d3.scaleBand()
+      .range([4 * bodyHeight / 9, 5 * bodyHeight / 9])
+      .domain(data.votesStacked.map(d => d.key))
+      .padding(0.1);
+
+  return { xScale, yScale, colorScale, legendScale }
 
 }
 
@@ -117,6 +122,34 @@ function drawAxesBarChart2(config, scales, data){
     .call(axisY)
 }
 
+function drawLegendBarChart(config, scales, data) {
+  let { width, height, margin, bodyHeight, bodyWidth, container } = config;
+  let { xScale, yScale, colorScale, legendScale } = scales;
+
+  let legendBody = container.append("g")
+    .style("transform",
+      `translate(${margin.left}px,${margin.top}px)`
+    )
+
+  let legendMarks = legendBody
+    .selectAll("candidates")
+    .data(data.votesStacked)
+    .join("rect")
+    .attr("fill", d => colorScale(d.key))
+    .attr("x", d => xScale(150000))
+    .attr("y", d => legendScale(d.key))
+    .attr("width", 10)
+    .attr("height", 10);
+
+  let legendLabels = legendBody
+    .selectAll("candidates")
+    .data(data.votesStacked)
+    .join("text")
+    .text(d => d.key)
+    .attr("x", d => xScale(150000) + 15)
+    .attr("y", d => legendScale(d.key) + legendScale.bandwidth() / 2)
+    .attr("font-size", 12);
+}
 
 function showBarData2(data) {
   prepData2(data);
@@ -125,6 +158,7 @@ function showBarData2(data) {
   let scales = getBarScales2(config, data);
   drawBar2(config, scales, data);
   drawAxesBarChart2(config, scales, data);
+  drawLegendBarChart(config, scales, data);
 }
 
 loadBar2Data().then(showBarData2);

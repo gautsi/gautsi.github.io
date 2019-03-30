@@ -32,13 +32,13 @@ function getBarConfig() {
     }
     let bodyHeight = height - margin.top - margin.bottom
     let bodyWidth = width - margin.left - margin.right
-    let container = d3.select("#bar1").append("svg")
+    let container = d3.select("#bar1").attr("align","center").append("svg");
 
     container
         .attr("width", width)
         .attr("height", height)
 
-    return { width, height, margin, bodyHeight, bodyWidth, container }
+    return { width, height, margin, bodyHeight, bodyWidth, container };
 }
 
 function getBarScales(config, data) {

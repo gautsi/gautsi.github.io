@@ -7,7 +7,7 @@ categories: post
 
 Last year the New York Times published this image to represent election results for a New York State race (from [here](https://www.nytimes.com/interactive/2018/09/13/us/elections/100000006097483.app.html?nytapp=true)):
 
-<img src="/assets/nyt_nys_ag_dp_2018_map_032619.png" height="50%" width="50%" border="1">
+<img src="/assets/nyt_nys_ag_dp_2018_map_033019.png" height="60%" width="60%" border="1">{: .center-image }
 
 I don't think this map effectively communicates the results of the election. The visual marks are areas that accurately represent the geographic shape of NYS counties and have color corresponding to the candidate that got the most votes in the county. This means the total color area for a candidate is the total county area of counties that the candidate won. So on first impression, it seems as if this election was a close race between Teachout and Maloney with James a distant third, when in fact James won. The number or total area of counties won is not so meaningful in a statewide popular vote election such as this, because (perhaps among other things)
 - county area is not necessarily proportional to county population and
@@ -28,21 +28,9 @@ And then add in vote counts for each candidate as stacked bars:
 <div id="bar2" style="position:relative;" >
 </div>
 
-This chart better shows the popular vote count for each candidate by county and for the state overall, but loses all the geographic meaning that the map had. For example, we can't tell from the bar chart as the NYT map seems to show that Maloney won many votes in the western counties, Teachout in the east and James in the south. Also, most of the high population counties (bars on the left of the chart) are in the lower part of the state, a fact not communicated by the bar chart. Can we visualize this election in way that both accurately represents the popular vote counts both statewide and countywide and communicates the general location of counties and their closeness to each other?
+This chart better shows the popular vote count for each candidate by county and the general result for the state overall, but loses all the geographic meaning that the map had. For example, we can't tell from the bar chart as the NYT map seems to show that Maloney won many votes in the western counties, Teachout in the east and James in the south. Also, most of the high population counties (bars on the left of the chart) are in the lower part of the state, a fact not communicated by the bar chart. Can we visualize this election in way that both accurately represents the popular vote counts both statewide and countywide and communicates the general location of counties and their closeness to each other?
 
-Researching other ways to represent geographic objects brought me to the concept of a cartogram. According to Wikipedia, a cartogram is a ...
-
-There are many different ways to choose and organize the marks in a cartogram. Here is a paper that looks at various methods and compares by expressiveness and effectiveness of communicating geographic and other values...
-
-For a cartogram of the election, the shape of a county didn't need preserving but rather its position in the state and relative to other counties.
-
-
-d3
-
-<div id="carto2" style="height: 400px; width:400px; position:relative;" >
-<svg id="cartoD3"></svg>
-</div>
-
+In the next [part]({% post_url 2019-03-23-nys-carto-2 %}) I'll talk about the concept of a cartogram, which is one way to visualize the relationships between geographic entities along with non-geographic properties of those entities (e.g. number of votes for a candidate in an election).
 
 
 <script src="https://d3js.org/d3.v5.min.js"></script>
@@ -50,7 +38,6 @@ d3
 
 <script src="/sketches/carto/counties_bar.js"></script>
 <script src="/sketches/carto/counties_bar2.js"></script>
-<script src="/sketches/carto/carto_d3.js"></script>
 
 ### Notes
 
@@ -70,4 +57,4 @@ p5
 
 
 ### To do
-- [ ] follow https://observablehq.com/@d3/stacked-bar-chart to make a bar chart
+- [x] follow https://observablehq.com/@d3/stacked-bar-chart to make a stacked bar chart
