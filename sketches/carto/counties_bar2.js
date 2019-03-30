@@ -15,16 +15,13 @@ function prepData2(data) {
   data["candidates"] = Object.keys(data.votes[0]).filter(i => i != "County");
   data.votes.forEach(i => {
     i["countyFixed"] = i["County"].split(" County")[0];
-    i["candidates"] = data["candidates"].map(j => {
-      return {candidate: j.split(" (DEM)")[0], votes: Number(i[j].replace(",", ""))}});
-    i["totalVotes"] = d3.sum(i.candidates.map(a => a.votes));
+    data["candidates"].forEach(c => {i[c.split(" (DEM)")[0]] = Number(i[c].replace(",", ""))});
+    i["totalVotes"] = d3.sum(data["candidates"].map(c => i[c.split(" (DEM)")[0]]));
   });
 
-  data.layers = d3.stack()(data.candidates.map(function(c) {
-    return data.votes.map(function(d) {
-      return {x: d.candidates.filter(i => i["candidate"] === c.split(" (DEM)")[0])[0].votes, y: d.countyFixed};
-    });
-  }));
+  data["candidatesFixed"] = data["candidates"].map(c => c.split(" (DEM)")[0]);
+
+  data["votesStacked"] = d3.stack().keys(data["candidatesFixed"])(data.votes);
 }
 
 function getBarConfig2() {
@@ -60,9 +57,14 @@ function getBarScales2(config, data) {
   let yScale = d3.scaleBand()
       .range([0, bodyHeight])
       .domain(data.votes.sort((a, b) => b.totalVotes - a.totalVotes).map(a => a.countyFixed))
-      .padding(0.1);
+      .padding(0.2);
 
-  return { xScale, yScale }
+  let colorScale = d3.scaleOrdinal()
+    .domain(data.votesStacked.map(d => d.key))
+    .range([1, 2, 0, 3].map(i => d3.schemeSet1[i]))
+    .unknown(grey2);
+
+  return { xScale, yScale, colorScale }
 
 }
 
@@ -70,7 +72,7 @@ function getBarScales2(config, data) {
 
 function drawBar2(config, scales, data, color = d3.schemeDark2[1], fill = "none") {
   let { width, height, margin, bodyHeight, bodyWidth, container } = config;
-  let { xScale, yScale } = scales;
+  let { xScale, yScale, colorScale } = scales;
 
   let barBody = container.append("g")
       .style("transform",
@@ -79,19 +81,19 @@ function drawBar2(config, scales, data, color = d3.schemeDark2[1], fill = "none"
 
   let nodes = barBody
     .selectAll("counties")
-    .data(data.votes);
-
-  nodes.enter()
-    .append('rect')
-    .attr("x", 0)
-    .attr("y", d => yScale(d.countyFixed))
-    .attr("width", d => xScale(d.totalVotes))
+    .data(data.votesStacked)
+    .join("g")
+    .attr("fill", d => colorScale(d.key))
+    .selectAll("rect")
+    .data(d => d)
+    .join("rect")
+    .attr("x", d => xScale(d[0]))
+    .attr("y", d => yScale(d.data.countyFixed))
+    .attr("width", d => xScale(d[1]) - xScale(d[0]))
     .attr("height", d => yScale.bandwidth())
     // .attr("stroke-width", 2)
-    .attr("stroke", "none")
-    .attr("fill", grey2);
-
-  nodes.exit().remove();
+    // .attr("stroke", "none")
+    // .attr("fill", grey2);
 }
 
 function drawAxesBarChart2(config, scales, data){

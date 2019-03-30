@@ -54,7 +54,7 @@ function getBarScales(config, data) {
   let yScale = d3.scaleBand()
       .range([0, bodyHeight])
       .domain(data.votes.sort((a, b) => b.totalVotes - a.totalVotes).map(a => a.countyFixed))
-      .padding(0.1);
+      .padding(0.2);
 
   return { xScale, yScale }
 
