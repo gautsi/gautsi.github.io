@@ -83,11 +83,11 @@ function drawCountyCentroids() {
 
 function drawCountySquares() {
   squareJoin = container.selectAll("rect")
-    .data(nyCounties.features)
+    .data(countyCentroids)
     .enter()
     .append("rect")
-    .attr("x", d => path.centroid(d)[0] - currSquareSize / 2)
-    .attr("y", d => path.centroid(d)[1] - currSquareSize / 2)
+    .attr("x", d => d[0] - currSquareSize / 2)
+    .attr("y", d => d[1] - currSquareSize / 2)
     .attr("width", currSquareSize)
     .attr("height", currSquareSize)
     .attr("fill", "none")
@@ -167,8 +167,8 @@ function changeSquareSize() {
 
   squareJoin.transition()
     .duration(transDuration)
-    .attr("x", d => path.centroid(d)[0] - squareSize / 2)
-    .attr("y", d => path.centroid(d)[1] - squareSize / 2)
+    .attr("x", d => d[0] - squareSize / 2)
+    .attr("y", d =>d[1] - squareSize / 2)
     .attr("width", squareSize)
     .attr("height", squareSize);
 }

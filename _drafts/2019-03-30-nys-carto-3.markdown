@@ -29,10 +29,16 @@ square size
 <div id="counties" style="position:relative;" >
 </div>
 
+<div id="countiesUpdate" style="position:relative;" >
+</div>
+
+
 <script src="https://d3js.org/d3.v5.min.js"></script>
 <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
 
+<script src="/sketches/carto/update.js"></script>
 <script src="/sketches/carto/counties.js"></script>
+<script src="/sketches/carto/counties_update.js"></script>
 
 ### Notes
 - where does counties geojson come from?

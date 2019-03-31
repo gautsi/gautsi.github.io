@@ -31,8 +31,8 @@ d3
 <script src="https://d3js.org/d3.v5.min.js"></script>
 <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
 
-<script src="/sketches/carto/counties_bar.js"></script>
 <script src="/sketches/carto/counties_bar2.js"></script>
+<script src="/sketches/carto/update.js"></script>
 <script src="/sketches/carto/carto_d3_static.js"></script>
 
 ### Notes
