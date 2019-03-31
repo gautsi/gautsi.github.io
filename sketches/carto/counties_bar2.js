@@ -35,20 +35,21 @@ function getBarConfig2() {
     }
     let bodyHeight = height - margin.top - margin.bottom
     let bodyWidth = width - margin.left - margin.right
-    let container = d3.select("#bar2").attr("align","center").append("svg")
+
+
+    let container = d3.select("#bar2").attr("align","center").append("svg");
 
     container
       .attr("width", width)
-      .attr("height", height)
+      .attr("height", height);
 
-    return { width, height, margin, bodyHeight, bodyWidth, container }
+    return { width, height, margin, bodyHeight, bodyWidth, container };
 }
 
 function getBarScales2(config, data) {
   let { width, height, margin, bodyHeight, bodyWidth, container } = config;
 
   let maximumCount = d3.max(data.votes.map(a => a.totalVotes));
-  console.log(maximumCount);
 
   let xScale = d3.scaleLinear()
       .range([0, bodyWidth])
@@ -153,7 +154,6 @@ function drawLegendBarChart(config, scales, data) {
 
 function showBarData2(data) {
   prepData2(data);
-  console.log(data);
   let config = getBarConfig2();
   let scales = getBarScales2(config, data);
   drawBar2(config, scales, data);

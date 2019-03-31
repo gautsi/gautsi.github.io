@@ -1,12 +1,15 @@
-let store = {};
+let nodes = [];
+let origNodes = [];
 let ttlVel = [];
 
 let numNodes = 10;
 
+let buttonStatus = "reset";
+
 function makeNodes(num) {
   return [...Array(num).keys()].map(i => {
     let posRandFunc = d3.randomUniform(0, 300);
-    let sizeRandFunc = d3.randomUniform(50, 80);
+    let sizeRandFunc = d3.randomUniform(30, 100);
     let node = {
       "pos": [posRandFunc(), posRandFunc()],
       "size": [sizeRandFunc(), sizeRandFunc()],
@@ -17,43 +20,31 @@ function makeNodes(num) {
   });
 }
 
-function loadData() {
-    return Promise.all([
-      makeNodes(numNodes)
-    ]).then(datasets => {
-        store.nodes = datasets[0];
-        return store;
-    })
-}
+let button = d3
+  .select("#button")
+  .append("button");
 
-function getCartoConfig() {
-    let width = 400;
-    let height = 400;
-    let margin = {
-        top: 10,
-        bottom: 10,
-        left: 10,
-        right: 10};
+button.text(buttonStatus)
+  .on("click", function() {start()});
 
-    let bodyHeight = height - margin.top - margin.bottom;
-    let bodyWidth = width - margin.left - margin.right;
-    let container = d3.select("#carto2").attr("align", "center").append("svg");
 
-    container
-        .attr("width", width)
-        .attr("height", height);
+let width = 400;
+let height = 400;
+let margin = {
+    top: 10,
+    bottom: 10,
+    left: 10,
+    right: 10};
 
-    return { width, height, margin, bodyHeight, bodyWidth, container };
-}
+let bodyHeight = height - margin.top - margin.bottom;
+let bodyWidth = width - margin.left - margin.right;
+let container = d3.select("#carto2").append("svg");
 
-function getCartoScales(data) {
+container
+    .attr("width", width)
+    .attr("height", height);
 
-}
-
-function drawBackground(config) {
-  let { container, width, height } = config;
-
-  // draw background
+function drawBackground() {
   container
     .append("rect")
     .attr("x", 0)
@@ -64,14 +55,13 @@ function drawBackground(config) {
 }
 
 
-function drawCarto(config, data, color = d3.schemeDark2[1], fill = "none") {
-  let { container, width, height } = config;
+function drawCarto(drawNodes, color = d3.schemeDark2[1], fill = "none") {
 
-  let nodes = container
+  let ns = container
     .selectAll("nodes")
-    .data(data.nodes);
+    .data(drawNodes);
 
-  nodes.enter()
+  ns.enter()
     .append('rect')
     .attr("x", d => d.pos[0])
     .attr("y", d => d.pos[1])
@@ -81,7 +71,7 @@ function drawCarto(config, data, color = d3.schemeDark2[1], fill = "none") {
     .attr("stroke", color)
     .attr("fill", fill);
 
-  nodes.exit().remove();
+  ns.exit().remove();
 }
 
 function eltAdd(v1, v2) {
@@ -105,15 +95,20 @@ function dist(v1, v2) {
 }
 
 
-function updateNodes(data) {
+function updateNodes() {
+
   let ttlVel = 0;
-  data.nodes.forEach(d => {
+
+  nodes.forEach(d => {
     // array to store distances to other marks
     // to be used to calculate attraction
+
     let distTo = [];
-    data.nodes.forEach(d2 => {
+    nodes.forEach(d2 => {
       // store distance from d2 to d elementwise:
       // first get difference in position
+
+
       let currDistTo = eltAdd(d2.center, scaMult(d.center, -1));
 
       // then account for width/height, reducing distance accordingly
@@ -151,24 +146,39 @@ function updateNodes(data) {
   return ttlVel;
 }
 
-function deepCopyData(data) {
-  return {"nodes": JSON.parse(JSON.stringify(data.nodes))};
+function deepCopyNodes(nodes) {
+  return JSON.parse(JSON.stringify(nodes));
 }
 
-function showData(data) {
-  let config = getCartoConfig();
-  let origData = deepCopyData(data);
+function start() {
 
-  let moveTimer = d3.timer(function(elapsed) {
-    let currTtlVel = updateNodes(data);
-    drawBackground(config);
-    drawCarto(config, origData, color = d3.schemeSet2[0], fill = d3.schemeSet2[1]);
-    drawCarto(config, data, color = d3.schemeDark2[1], fill = "none");
+  if (buttonStatus === "update") {
+    let moveTimer = d3.timer(function(elapsed) {
+      let currTtlVel = updateNodes();
+      drawBackground();
+      drawCarto(origNodes, color = d3.schemeSet2[0], fill = d3.schemeSet2[1]);
+      drawCarto(nodes, color = d3.schemeDark2[1], fill = "none");
 
-    if (elapsed > 100000 | currTtlVel < 0.5) {
-      moveTimer.stop();
-    }
-  });
+      if (elapsed > 100000 | currTtlVel < 0.5) {
+        moveTimer.stop();
+        buttonStatus = "reset";
+        button.text("reset");
+        container.append("text").attr("x", 5).attr("y", 15).text("done.");
+      } else {
+        container.append("text").attr("x", 5).attr("y", 15).text("updating...");
+      }
+    });
+  } else if (buttonStatus === "reset") {
+    nodes = makeNodes(numNodes);
+    origNodes = deepCopyNodes(nodes);
+
+    drawBackground();
+    drawCarto(origNodes, color = d3.schemeSet2[0], fill = d3.schemeSet2[1]);
+    drawCarto(nodes, color = d3.schemeDark2[1], fill = "none");
+
+    buttonStatus = "update";
+    button.text("update");
+  }
 }
 
-loadData().then(showData);
+drawBackground();
