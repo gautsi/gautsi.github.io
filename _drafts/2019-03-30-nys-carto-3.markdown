@@ -41,6 +41,11 @@ County total votes
 <div id="countiesTtlVotes" style="position:relative;" >
 </div>
 
+County votes
+
+<div id="countiesVotes" style="position:relative;" >
+</div>
+
 
 <script src="https://d3js.org/d3.v5.min.js"></script>
 <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
@@ -49,6 +54,7 @@ County total votes
 <script src="/sketches/carto/counties.js"></script>
 <script src="/sketches/carto/counties_update.js"></script>
 <script src="/sketches/carto/counties_carto1.js"></script>
+<script src="/sketches/carto/counties_carto2.js"></script>
 
 ### Notes
 - where does counties geojson come from?
