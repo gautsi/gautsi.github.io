@@ -5,6 +5,8 @@ date:   2019-03-30
 categories: post
 ---
 
+County marks
+
 <div id="markSelection" style="float:left;">
 visual mark
   <select id="mark">
@@ -25,11 +27,18 @@ square size
   </select>
 </div>
 
-
 <div id="counties" style="position:relative;" >
 </div>
 
+Applying marks algorithm to counties
+
 <div id="countiesUpdate" style="position:relative;" >
+</div>
+
+
+County total votes
+
+<div id="countiesTtlVotes" style="position:relative;" >
 </div>
 
 
@@ -39,6 +48,7 @@ square size
 <script src="/sketches/carto/update.js"></script>
 <script src="/sketches/carto/counties.js"></script>
 <script src="/sketches/carto/counties_update.js"></script>
+<script src="/sketches/carto/counties_carto1.js"></script>
 
 ### Notes
 - where does counties geojson come from?
