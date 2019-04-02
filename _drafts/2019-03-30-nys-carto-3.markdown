@@ -51,9 +51,9 @@ County votes
 <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
 
 <script src="/sketches/carto/update.js"></script>
-<script src="/sketches/carto/counties.js"></script>
+<!--<script src="/sketches/carto/counties.js"></script>
 <script src="/sketches/carto/counties_update.js"></script>
-<script src="/sketches/carto/counties_carto1.js"></script>
+<script src="/sketches/carto/counties_carto1.js"></script>-->
 <script src="/sketches/carto/counties_carto2.js"></script>
 
 ### Notes
