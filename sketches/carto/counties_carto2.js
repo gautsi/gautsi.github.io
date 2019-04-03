@@ -24,7 +24,8 @@ function CountyVotesCartoConfig() {
     countyPaths: [],
     countyCentroids: [],
     countySquares: [],
-    transDuration: 1000
+    transDuration: 1000,
+    selectedCounty: "all"
   };
 
   config.bodyHeight = config.height - config.margin.top - config.margin.bottom;
@@ -123,7 +124,7 @@ Promise.all([
       moveTimer.stop();
       cvcConfig.statusText.text("");
       showCountyCartoVotesMap();
-      showCountyBarVotesMap("all");
+      showCountyBarVotesMap(cvcConfig.selectedCounty);
     }
   });
 
@@ -150,22 +151,43 @@ function showCountyBarVotesMap(county) {
         `translate(${cvcConfig.barMargin.left}px,${cvcConfig.barMargin.top}px)`
       );
 
+  // clear the bar area
+  barBody
+    .append("rect")
+    .attr("x", -5)
+    .attr("y", 0)
+    .attr("width", cvcConfig.barBodyWidth + 20)
+    .attr("height", cvcConfig.barBodyHeight + 20)
+    .attr("fill", "white")
+    .attr("stroke", "none");
+
+  let barData = [];
 
   if (county == "all") {
     cvcConfig.barText.text("All votes");
-    barXScale.domain([0, d3.max(cvcConfig.totalVotes.map(c => c.votes))]);
-
-    barBody.selectAll("bar")
-      .data(cvcConfig.totalVotes)
-      .enter()
-      .append("rect")
-      .attr("x", barXScale(0))
-      .attr("y", d => barYScale(d.candidate))
-      .attr("width", d => barXScale(d.votes))
-      .attr("height", barYScale.bandwidth())
-      .attr("fill", d => colorScale(d.candidate))
-      .attr("stroke", "none");
+    barData = cvcConfig.totalVotes;
+  } else {
+    cvcConfig.barText.text(county);
+    barData = cvcConfig.candidatesFixed.map(c => {
+      let candidateVotes = cvcConfig.countySquares
+        .filter(s => s.name === county)[0][c];
+      return { "candidate": c, "votes": candidateVotes };
+    });
   }
+
+  barXScale.domain([0, d3.max(barData.map(c => c.votes))]);
+
+  barBody.selectAll("bar")
+    .data(barData)
+    .enter()
+    .append("rect")
+    .attr("x", barXScale(0))
+    .attr("y", d => barYScale(d.candidate))
+    .attr("width", d => barXScale(d.votes))
+    .attr("height", barYScale.bandwidth())
+    .attr("fill", d => colorScale(d.candidate))
+    .attr("stroke", "none");
+
 
   let axisX = d3.axisBottom(barXScale)
                 .ticks(5)
@@ -209,7 +231,15 @@ function showCountyCartoVotesMap() {
     .attr("width", d => d.size[0])
     .attr("height", d => d.size[1])
     .attr("fill", cvcConfig.lightGrey)
-    .attr("stroke", "none");
+    .attr("stroke", "none")
+    .on("mouseover", function (d, i) {
+      cvcConfig.selectedCounty = d.name;
+      showCountyBarVotesMap(cvcConfig.selectedCounty);
+    })
+    .on("mouseout", function (d, i) {
+      cvcConfig.selectedCounty = "all";
+      showCountyBarVotesMap(cvcConfig.selectedCounty);
+    });
 
     // draw votes rects
     cvcConfig.container
@@ -224,5 +254,14 @@ function showCountyCartoVotesMap() {
       .attr("y", d => (d.data.pos[1] + cvcConfig.currSquareSize - totalVotesScale(d[1])))
       .attr("width", d => d.data.size[0])
       .attr("height", d => totalVotesScale(d[1]) - totalVotesScale(d[0]))
-      .attr("stroke", "none");
+      .attr("stroke", "none")
+      .on("mouseover", function (d, i) {
+        cvcConfig.selectedCounty = d.data.name;
+        showCountyBarVotesMap(cvcConfig.selectedCounty);
+      })
+      .on("mouseout", function (d, i) {
+        cvcConfig.selectedCounty = "all";
+        showCountyBarVotesMap(cvcConfig.selectedCounty);
+      });
+
 }
