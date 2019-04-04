@@ -20,11 +20,15 @@ There are many different ways to choose and organize the marks in a cartogram. H
 
 For a cartogram of the election, the shape of a county didn't need preserving but rather its position in the state and relative to other counties. So perhaps we could first represent each county by a square, and then fill each square with representations of candidate vote totals in the county. All squares could be equal in size, so that no county occupies more space on the canvas than any other. But where do we place the county squares? The locations of the squares overall and relative to the other squares are how we will communicate the geographical structures in the data so we want to place them in geographically accurate positions.
 
-One way we could place the squares is to center them on the centroids of the county shapes. The next sketch shows the counties, their centroids and squares centered at the centroids and lets you change the size of the squares. This seems like a reasonable way to place square, except that depending on the size of the square they overalap. Overlap is a problem for us because it can make easily see differences between properties of the county difficult. For the smallest square size of 5, there is no overlap but the squares are also prohibititively small to place other marks in. For larger square sizes like 20, there is overlap in various parts of the state, especially NYC.
+One way we could place the squares is to center them on the centroids of the county shapes. The next sketch shows the counties, their centroids and squares centered at the centroids and lets you change the size of the squares. This seems like a reasonable way to place square, except that depending on the size of the square they overalap. Overlap is a problem for us because it can make easily see differences between properties of the county difficult. For the smallest square size of 5, there is no overlap but the squares are also prohibitively small to place other marks in. For larger square sizes like 20, there is overlap in various parts of the state, especially NYC.
 
-How to remove overlap? The method I show here iterates through the marks, calculates overlaps and moves each mark away from overlapping squares and repeats until there is no more overlap left.
+ADD SKETCH HERE
 
+How to remove overlap? The method I show here iterates through the marks, calculates overlaps and moves each mark away from overlapping marks and repeats until there is no more overlap left. For the sake of aesthetics, this movement is implemented as a repulsive force that overlapping marks apply on each other, plus friction to stop marks from moving too much once they no longer overlap. The algorithm handles rectangular marks of different sizes for a use case where the size or shape of marks represent some property.
 
+I also add an attractive force to bring outlier marks closer in to reduce space between marks which in my idea for the election map would not be directly used and which might make comparison between counties a little more difficult. For each mark the three closest neighboring marks are identified (by distance between the edges of the marks) and pull the mark closer to them, as long as the mark is not already adjacent to one of them (because we don't want to introduce more overlaps!).
+
+Since I'm resolving overlaps and spaces with made up repulsive and attractive forces between marks, I wonder if I could use d3's network force layout methods instead. I would need to add some kind of non-overlapping nodes constraint, maybe a minimum distance, but one that can handle rectangular nodes of different shapes and sizes. I'm not very familiar with these d3 functions so am not sure if this is easily implemented.
 
 
 d3
@@ -47,3 +51,4 @@ d3
 
 ### To do
 - [x] print status on carto calc sketch
+- [ ] add counties/centriods/squares sketch
