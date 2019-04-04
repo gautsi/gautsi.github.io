@@ -18,7 +18,13 @@ Researching other ways to represent geographic objects brought me to the concept
 
 There are many different ways to choose and organize the marks in a cartogram. Here is a paper that looks at various methods and compares by expressiveness and effectiveness of communicating geographic and other values...
 
-For a cartogram of the election, the shape of a county didn't need preserving but rather its position in the state and relative to other counties.
+For a cartogram of the election, the shape of a county didn't need preserving but rather its position in the state and relative to other counties. So perhaps we could first represent each county by a square, and then fill each square with representations of candidate vote totals in the county. All squares could be equal in size, so that no county occupies more space on the canvas than any other. But where do we place the county squares? The locations of the squares overall and relative to the other squares are how we will communicate the geographical structures in the data so we want to place them in geographically accurate positions.
+
+One way we could place the squares is to center them on the centroids of the county shapes. The next sketch shows the counties, their centroids and squares centered at the centroids and lets you change the size of the squares. This seems like a reasonable way to place square, except that depending on the size of the square they overalap. Overlap is a problem for us because it can make easily see differences between properties of the county difficult. For the smallest square size of 5, there is no overlap but the squares are also prohibititively small to place other marks in. For larger square sizes like 20, there is overlap in various parts of the state, especially NYC.
+
+How to remove overlap? The method I show here iterates through the marks, calculates overlaps and moves each mark away from overlapping squares and repeats until there is no more overlap left.
+
+
 
 
 d3
