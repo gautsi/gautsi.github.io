@@ -25,7 +25,7 @@ function CountyVotesCartoConfig() {
     countyCentroids: [],
     countySquares: [],
     transDuration: 1000,
-    selectedCounty: "all"
+    selectedCounty: "All counties"
   };
 
   config.bodyHeight = config.height - config.margin.top - config.margin.bottom;
@@ -129,83 +129,93 @@ Promise.all([
   });
 
   cvcConfig.countySquaresStacked = d3.stack().keys(cvcConfig.candidatesFixed)(cvcConfig.countySquares);
-});
 
-function showCountyBarVotesMap(county) {
+  cvcConfig.countyBars = cvcConfig.countySquaresStacked.map(c => {
+    let candBarData = { "candidate": c.key};
+    c.forEach(i => {candBarData[i.data.name] = i.data[c.key]});
+    candBarData["All counties"] = d3.sum(c.map(i => i.data[c.key]));
+    return candBarData;
+  });
 
-  let colorScale = d3.scaleOrdinal()
+  cvcConfig.barBody = cvcConfig.container.append("g")
+    .style("transform",
+      `translate(${cvcConfig.barMargin.left}px,${cvcConfig.barMargin.top}px)`
+  );
+
+  cvcConfig.colorScale = d3.scaleOrdinal()
     .domain(cvcConfig.countySquaresStacked.map(d => d.key))
     .range([2, 3, 1, 0].map(i => d3.schemeSet1[i]))
     .unknown(cvcConfig.darkGrey);
 
-  let barYScale = d3.scaleBand()
-      .range([0, cvcConfig.barBodyHeight])
-      .domain(cvcConfig.countySquaresStacked.map(d => d.key))
-      .padding(0.2);
+  cvcConfig.barYScale = d3.scaleBand()
+    .range([0, cvcConfig.barBodyHeight])
+    .domain(cvcConfig.countyBars.map(d => d.candidate))
+    .padding(0.2);
 
-  let barXScale = d3.scaleLinear()
-      .range([0, cvcConfig.barBodyWidth]);
+  cvcConfig.barXScale = d3.scaleLinear()
+    .range([0, cvcConfig.barBodyWidth]);
 
-  let barBody = cvcConfig.container.append("g")
-      .style("transform",
-        `translate(${cvcConfig.barMargin.left}px,${cvcConfig.barMargin.top}px)`
-      );
+  cvcConfig.barText.text(cvcConfig.selectedCounty);
 
-  // clear the bar area
-  barBody
-    .append("rect")
-    .attr("x", -5)
-    .attr("y", 0)
-    .attr("width", cvcConfig.barBodyWidth + 20)
-    .attr("height", cvcConfig.barBodyHeight + 20)
-    .attr("fill", "white")
-    .attr("stroke", "none");
-
-  let barData = [];
-
-  if (county == "all") {
-    cvcConfig.barText.text("All votes");
-    barData = cvcConfig.totalVotes;
-  } else {
-    cvcConfig.barText.text(county);
-    barData = cvcConfig.candidatesFixed.map(c => {
-      let candidateVotes = cvcConfig.countySquares
-        .filter(s => s.name === county)[0][c];
-      return { "candidate": c, "votes": candidateVotes };
-    });
-  }
-
-  barXScale.domain([0, d3.max(barData.map(c => c.votes))]);
-
-  barBody.selectAll("bar")
-    .data(barData)
-    .enter()
-    .append("rect")
-    .attr("x", barXScale(0))
-    .attr("y", d => barYScale(d.candidate))
-    .attr("width", d => barXScale(d.votes))
-    .attr("height", barYScale.bandwidth())
-    .attr("fill", d => colorScale(d.candidate))
-    .attr("stroke", "none");
-
-
-  let axisX = d3.axisBottom(barXScale)
+  cvcConfig.axisX = d3.axisBottom(cvcConfig.barXScale)
                 .ticks(5)
 
-  cvcConfig.container.append("g")
+  cvcConfig.domAxisX = cvcConfig.container.append("g")
     .style("transform",
         `translate(${cvcConfig.barMargin.left}px,${cvcConfig.height - cvcConfig.barMargin.bottom}px)`
     )
-    .call(axisX)
+    .call(cvcConfig.axisX)
 
 
-  let axisY = d3.axisRight(barYScale).tickSize(0);
+  cvcConfig.axisY = d3.axisRight(cvcConfig.barYScale).tickSize(0);
 
-  cvcConfig.container.append("g")
+  cvcConfig.domAxisY = cvcConfig.container.append("g")
     .style("transform",
         `translate(${cvcConfig.barMargin.left}px,${cvcConfig.barMargin.top}px)`
     )
-    .call(axisY);
+    .call(cvcConfig.axisY);
+
+
+});
+
+function showCountyBarVotesMap(county) {
+
+  cvcConfig.barXScale.domain([0, d3.max(cvcConfig.countyBars.map(c => c[county]))]);
+  cvcConfig.domAxisX.call(cvcConfig.axisX.scale(cvcConfig.barXScale));
+
+  // clear the bar area
+  //barBody
+  //  .append("rect")
+  //  .attr("x", -5)
+  //  .attr("y", 0)
+  //  .attr("width", cvcConfig.barBodyWidth + 20)
+  //  .attr("height", cvcConfig.barBodyHeight + 20)
+  //  .attr("fill", "white")
+  //  .attr("stroke", "none");
+
+  cvcConfig.barBody.selectAll("rect")
+    .data(cvcConfig.countyBars)
+    .enter()
+    .append("rect")
+    .attr("x", cvcConfig.barXScale(0))
+    .attr("y", d => cvcConfig.barYScale(d.candidate))
+    .attr("width", d => cvcConfig.barXScale(d[county]))
+    .attr("height", cvcConfig.barYScale.bandwidth())
+    .attr("fill", d => cvcConfig.colorScale(d.candidate))
+    .attr("stroke", "none");
+}
+
+function transBar(county) {
+  console.log(county);
+  cvcConfig.selectedCounty = county;
+  cvcConfig.barXScale.domain([0, d3.max(cvcConfig.countyBars.map(c => c[county]))]);
+  cvcConfig.domAxisX.transition().duration(1000).call(cvcConfig.axisX.scale(cvcConfig.barXScale));
+  cvcConfig.barText.transition().duration(1000).text(county);
+  cvcConfig.barBody
+    .selectAll("rect")
+    .transition()
+    .duration(1000)
+    .attr("width", d => cvcConfig.barXScale(d[county]));
 }
 
 function showCountyCartoVotesMap() {
@@ -213,12 +223,6 @@ function showCountyCartoVotesMap() {
   let totalVotesScale = d3.scaleLinear()
     .domain([0, d3.max(cvcConfig.countySquares.map(c => c.totalVotes))])
     .range([0, cvcConfig.currSquareSize]);
-
-  let colorScale = d3.scaleOrdinal()
-    .domain(cvcConfig.countySquaresStacked.map(d => d.key))
-    .range([2, 3, 1, 0].map(i => d3.schemeSet1[i]))
-    .unknown(cvcConfig.darkGrey);
-
 
   // draw outer square
   cvcConfig.container
@@ -232,21 +236,15 @@ function showCountyCartoVotesMap() {
     .attr("height", d => d.size[1])
     .attr("fill", cvcConfig.lightGrey)
     .attr("stroke", "none")
-    .on("mouseover", function (d, i) {
-      cvcConfig.selectedCounty = d.name;
-      showCountyBarVotesMap(cvcConfig.selectedCounty);
-    })
-    .on("mouseout", function (d, i) {
-      cvcConfig.selectedCounty = "all";
-      showCountyBarVotesMap(cvcConfig.selectedCounty);
-    });
+    .on("mouseover", d => transBar(d.name))
+    .on("mouseout", d => transBar("All counties"));
 
     // draw votes rects
     cvcConfig.container
       .selectAll("countyVoteMarks")
       .data(cvcConfig.countySquaresStacked)
       .join("g")
-      .attr("fill", d => colorScale(d.key))
+      .attr("fill", d => cvcConfig.colorScale(d.key))
       .selectAll("countyVoteCandidateMarks")
       .data(d => d)
       .join("rect")
@@ -255,13 +253,7 @@ function showCountyCartoVotesMap() {
       .attr("width", d => d.data.size[0])
       .attr("height", d => totalVotesScale(d[1]) - totalVotesScale(d[0]))
       .attr("stroke", "none")
-      .on("mouseover", function (d, i) {
-        cvcConfig.selectedCounty = d.data.name;
-        showCountyBarVotesMap(cvcConfig.selectedCounty);
-      })
-      .on("mouseout", function (d, i) {
-        cvcConfig.selectedCounty = "all";
-        showCountyBarVotesMap(cvcConfig.selectedCounty);
-      });
+      .on("mouseover", d => transBar(d.data.name))
+      .on("mouseout", d => transBar("All counties"));
 
 }
