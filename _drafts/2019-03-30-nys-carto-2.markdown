@@ -31,6 +31,8 @@ I also add an attractive force to bring outlier marks closer in to reduce space 
 Since I'm resolving overlaps and spaces with made up repulsive and attractive forces between marks, I wonder if I could use d3's network force layout methods instead. I would need to add some kind of non-overlapping nodes constraint, maybe a minimum distance, but one that can handle rectangular nodes of different shapes and sizes. I'm not very familiar with these d3 functions so am not sure if this is easily implemented.
 
 
+The below sketch shows the algorithm at work. Starting with a random arrangement of 10 rectangles of different sizes, the sketch shows how the positions of rectangles change after applying successive rounds of repulsive/attractive forces. The dark orange rectangles show the updating positions, while the light orange filled in rectangles show the original positions of the rectangles for comparison. The updating stops once the total velocity of all marks is below a low threshold, or the algorithm has run through a large number of iterations. 
+
 d3
 
 <div id="button" style="position:relative;" ></div>
