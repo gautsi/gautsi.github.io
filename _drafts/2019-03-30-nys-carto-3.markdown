@@ -5,31 +5,6 @@ date:   2019-03-30
 categories: post
 ---
 
-County marks
-
-<div id="markSelection" style="float:left;">
-visual mark
-  <select id="mark">
-  		<option value="counties" selected="selected">counties</option>
-  		<option value="centroids">centroids</option>
-  		<option value="squares">squares</option>
-  </select>
-</div>
-
-<div id="squareSizeSelection" style="overflow:hidden; padding-left:10px;">
-square size
-  <select id="squareSize">
-    <option value="5">5</option>
-    <option value="10">10</option>
-		<option value="20" selected="selected">20</option>
-    <option value="30">30</option>
-    <option value="40">40</option>
-  </select>
-</div>
-
-<div id="counties" style="position:relative;" >
-</div>
-
 Applying marks algorithm to counties
 
 <div id="countiesUpdate" style="position:relative;" >
@@ -51,9 +26,8 @@ County votes
 <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
 
 <script src="/sketches/carto/update.js"></script>
-<!--<script src="/sketches/carto/counties.js"></script>
 <script src="/sketches/carto/counties_update.js"></script>
-<script src="/sketches/carto/counties_carto1.js"></script>-->
+<script src="/sketches/carto/counties_carto1.js"></script>
 <script src="/sketches/carto/counties_carto2.js"></script>
 
 ### Notes

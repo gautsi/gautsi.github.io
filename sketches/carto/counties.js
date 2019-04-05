@@ -1,98 +1,108 @@
-let nyCounties;
+function countyConfig() {
+  let config = {
+    lightColor: "#cccccc",
+    darkColor: d3.schemeDark2[1],
+    lightGrey: "#eeeeee",
+    darkGrey: "#bbbbbb",
+    lightWidth: 1,
+    darkWidth: 2,
+    lightRad: 1,
+    darkRad: 2,
+    width: 500,
+    height: 500,
+    margin: {
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right: 10},
+    barMargin: {
+        top: 440,
+        bottom: 50,
+        left: 5,
+        right: 300},
+    container: d3.select("#countiesVotes").append("svg"),
+    currSquareSize: 20,
+    projection: d3.geoMercator(),
+    countyPaths: [],
+    countyCentroids: [],
+    countySquares: [],
+    transDuration: 1000,
+    selectedCounty: "All counties"
+  };
 
-let lightColor = "#cccccc";
-let darkColor = d3.schemeDark2[1];
-
-let lightWidth = 1;
-let darkWidth = 2;
-
-let lightRad = 1;
-let darkRad = 3;
+  config.bodyHeight = config.height - config.margin.top - config.margin.bottom;
+  config.bodyWidth = config.width - config.margin.left - config.margin.right;
 
 
-let width = 500;
-let height = 500;
-let margin = {
-    top: 10,
-    bottom: 10,
-    left: 10,
-    right: 10};
+  config.container = d3.select("#counties").append("svg");
 
-let bodyHeight = height - margin.top - margin.bottom;
-let bodyWidth = width - margin.left - margin.right;
+  config.container
+    .attr("width", config.bodyWidth)
+    .attr("height", config.bodyHeight);
+
+  config.statusText = config.container.append("text").attr("x", 5).attr("y", 15).text("preparing map...");
+
+  config.currMark = "counties";
+  return config;
+}
 
 
-let container = d3.select("#counties").append("svg");
+let cConfig = countyConfig();
 
-container
-  .attr("width", bodyWidth)
-  .attr("height", bodyHeight);
-
-let statusText = container.append("text").attr("x", 5).attr("y", 15).text("preparing map...");
-
-let currSquareSize = 20;
-let currMark = "counties";
-
-let projection = d3.geoMercator();
-let countyPaths = [];
-let countyCentroids = [];
-let countySquares = [];
-
-let transDuration = 1000;
 
 d3.select("#mark").on("change", changeMark);
 d3.select("#squareSize").on("change", changeSquareSize);
 
 d3.json("/assets/counties/us_counties.json").then(function (allCounties) {
-  nyCounties = allCounties;
+  let nyCounties = allCounties;
   nyCounties.features = nyCounties.features.filter(county => county.properties.STATEFP === "36");
 
-  projection.fitExtent([[margin.top, margin.left], [bodyWidth, bodyHeight]], nyCounties);
+  cConfig.projection.fitExtent([[cConfig.margin.top, cConfig.margin.left], [cConfig.bodyWidth, cConfig.bodyHeight]], nyCounties);
 
-  path = d3.geoPath().projection(projection);
+  cConfig.path = d3.geoPath().projection(cConfig.projection);
 
-  countyPaths = nyCounties.features.map(d => path(d));
-  countyCentroids = nyCounties.features.map(d => path.centroid(d));
+  cConfig.countyPaths = nyCounties.features.map(d => cConfig.path(d));
+  cConfig.countyCentroids = nyCounties.features.map(d => cConfig.path.centroid(d));
 
-  statusText.text("");
+  cConfig.statusText.text("");
   showMap();
 });
 
 function drawCountyPaths() {
-  container.selectAll("path")
-    .data(countyPaths)
+  cConfig.container.selectAll("path")
+    .data(cConfig.countyPaths)
     .enter()
     .append("path")
     .attr("d", d => d)
     .attr("fill", "none")
-    .attr("stroke", darkColor)
-    .attr("stroke-width", darkWidth);
+    .attr("stroke", cConfig.darkColor)
+    .attr("stroke-width", cConfig.darkWidth);
 }
 
 function drawCountyCentroids() {
-  container.selectAll("circle")
-    .data(countyCentroids)
+  cConfig.container.selectAll("circle")
+    .data(cConfig.countyCentroids)
     .enter()
     .append("circle")
     .attr("cx", d => d[0])
     .attr("cy", d => d[1])
-    .attr("r", lightRad)
-    .attr("fill", lightColor)
+    .attr("r", cConfig.lightRad)
+    .attr("fill", cConfig.lightColor)
     .attr("stroke", "none");
 }
 
 function drawCountySquares() {
-  squareJoin = container.selectAll("rect")
-    .data(countyCentroids)
+  cConfig.squareJoin = cConfig.container.selectAll("rect")
+    .data(cConfig.countyCentroids)
     .enter()
     .append("rect")
-    .attr("x", d => d[0] - currSquareSize / 2)
-    .attr("y", d => d[1] - currSquareSize / 2)
-    .attr("width", currSquareSize)
-    .attr("height", currSquareSize)
+    .attr("x", d => d[0] - cConfig.currSquareSize / 2)
+    .attr("y", d => d[1] - cConfig.currSquareSize / 2)
+    .attr("width", cConfig.currSquareSize)
+    .attr("height", cConfig.currSquareSize)
     .attr("fill", "none")
-    .attr("stroke", lightColor)
-    .attr("stroke-width", lightWidth);
+    .attr("stroke", cConfig.lightColor)
+    .attr("stroke-width", cConfig.lightWidth);
 }
 
 
@@ -101,62 +111,62 @@ function showMap() {
   drawCountyPaths();
   drawCountyCentroids();
   drawCountySquares();
-  container.selectAll("path").raise();
+  cConfig.container.selectAll("path").raise();
 }
 
 function changeMark() {
   let markSelect = document.getElementById("mark");
   let mark = markSelect.options[markSelect.selectedIndex].value;
   if (mark === "counties") {
-    container.selectAll("path").transition()
-      .duration(transDuration)
-      .attr("stroke", darkColor)
-      .attr("stroke-width", darkWidth)
-      .on("end", function() {container.selectAll("path").raise()});
+    cConfig.container.selectAll("path").transition()
+      .duration(cConfig.transDuration)
+      .attr("stroke", cConfig.darkColor)
+      .attr("stroke-width", cConfig.darkWidth)
+      .on("end", function() {cConfig.container.selectAll("path").raise()});
 
-    container.selectAll("circle").transition()
-      .duration(transDuration)
-      .attr("fill", lightColor)
-      .attr("r", lightRad);
+    cConfig.container.selectAll("circle").transition()
+      .duration(cConfig.transDuration)
+      .attr("fill", cConfig.lightColor)
+      .attr("r", cConfig.lightRad);
 
-    container.selectAll("rect").transition()
-      .duration(transDuration)
-      .attr("stroke", lightColor)
-      .attr("stroke-width", lightWidth);
+    cConfig.container.selectAll("rect").transition()
+      .duration(cConfig.transDuration)
+      .attr("stroke", cConfig.lightColor)
+      .attr("stroke-width", cConfig.lightWidth);
 
   } else if (mark === "centroids") {
-    container.selectAll("path").transition()
-      .duration(transDuration)
-      .attr("stroke", lightColor)
-      .attr("stroke-width", lightWidth);
+    cConfig.container.selectAll("path").transition()
+      .duration(cConfig.transDuration)
+      .attr("stroke", cConfig.lightColor)
+      .attr("stroke-width", cConfig.lightWidth);
 
-    container.selectAll("circle").transition()
-      .duration(transDuration)
-      .attr("fill", darkColor)
-      .attr("r", darkRad)
-      .on("end", function() {container.selectAll("circle").raise()});
+    cConfig.container.selectAll("circle").transition()
+      .duration(cConfig.transDuration)
+      .attr("fill", cConfig.darkColor)
+      .attr("r", cConfig.darkRad)
+      .on("end", function() {cConfig.container.selectAll("circle").raise()});
 
-    container.selectAll("rect").transition()
-      .duration(transDuration)
-      .attr("stroke", lightColor)
-      .attr("stroke-width", lightWidth);
+    cConfig.container.selectAll("rect").transition()
+      .duration(cConfig.transDuration)
+      .attr("stroke", cConfig.lightColor)
+      .attr("stroke-width", cConfig.lightWidth);
 
   } else if (mark === "squares") {
-    container.selectAll("path").transition()
-      .duration(transDuration)
-      .attr("stroke", lightColor)
-      .attr("stroke-width", lightWidth);
+    cConfig.container.selectAll("path").transition()
+      .duration(cConfig.transDuration)
+      .attr("stroke", cConfig.lightColor)
+      .attr("stroke-width", cConfig.lightWidth);
 
-    container.selectAll("circle").transition()
-      .duration(transDuration)
-      .attr("fill", lightColor)
-      .attr("r", lightRad);
+    cConfig.container.selectAll("circle").transition()
+      .duration(cConfig.transDuration)
+      .attr("fill", cConfig.lightColor)
+      .attr("r", cConfig.lightRad);
 
-    container.selectAll("rect").transition()
-      .duration(transDuration)
-      .attr("stroke", darkColor)
-      .attr("stroke-width", darkWidth)
-      .on("end", function() {container.selectAll("rect").raise()});
+    cConfig.container.selectAll("rect").transition()
+      .duration(cConfig.transDuration)
+      .attr("stroke", cConfig.darkColor)
+      .attr("stroke-width", cConfig.darkWidth)
+      .on("end", function() {cConfig.container.selectAll("rect").raise()});
   }
 }
 
@@ -165,8 +175,8 @@ function changeSquareSize() {
   let squareSizeSelect = document.getElementById("squareSize");
   let squareSize = Number(squareSizeSelect.options[squareSizeSelect.selectedIndex].value);
 
-  squareJoin.transition()
-    .duration(transDuration)
+  cConfig.squareJoin.transition()
+    .duration(cConfig.transDuration)
     .attr("x", d => d[0] - squareSize / 2)
     .attr("y", d =>d[1] - squareSize / 2)
     .attr("width", squareSize)

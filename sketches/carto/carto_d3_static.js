@@ -81,7 +81,9 @@ function deepCopyNodes(nodes) {
 function start() {
 
   if (buttonStatus === "update") {
+    let numIterations = 0;
     let moveTimer = d3.timer(function(elapsed) {
+      numIterations += 1;
       let currTtlVel = updateNodes(nodes);
       drawBackground();
       drawCarto(origNodes, color = d3.schemeSet2[0], fill = d3.schemeSet2[1]);
@@ -91,9 +93,9 @@ function start() {
         moveTimer.stop();
         buttonStatus = "reset";
         button.text("reset");
-        container.append("text").attr("x", 5).attr("y", 15).text("done.");
+        container.append("text").attr("x", 5).attr("y", 15).attr("font-size", 12).text("done after " + numIterations + " iterations");
       } else {
-        container.append("text").attr("x", 5).attr("y", 15).text("updating...");
+        container.append("text").attr("x", 5).attr("y", 15).attr("font-size", 12).text("updating, iteration " + numIterations);
       }
     });
   } else if (buttonStatus === "reset") {

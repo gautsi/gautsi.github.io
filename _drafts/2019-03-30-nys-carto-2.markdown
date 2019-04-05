@@ -22,7 +22,28 @@ For a cartogram of the election, the shape of a county didn't need preserving bu
 
 One way we could place the squares is to center them on the centroids of the county shapes. The next sketch shows the counties, their centroids and squares centered at the centroids and lets you change the size of the squares. This seems like a reasonable way to place square, except that depending on the size of the square they overalap. Overlap is a problem for us because it can make easily see differences between properties of the county difficult. For the smallest square size of 5, there is no overlap but the squares are also prohibitively small to place other marks in. For larger square sizes like 20, there is overlap in various parts of the state, especially NYC.
 
-ADD SKETCH HERE
+<div id="markSelection" style="float:left;">
+visual mark
+  <select id="mark">
+  		<option value="counties" selected="selected">counties</option>
+  		<option value="centroids">centroids</option>
+  		<option value="squares">squares</option>
+  </select>
+</div>
+
+<div id="squareSizeSelection" style="overflow:hidden; padding-left:10px;">
+square size
+  <select id="squareSize">
+    <option value="5">5</option>
+    <option value="10">10</option>
+		<option value="20" selected="selected">20</option>
+    <option value="30">30</option>
+    <option value="40">40</option>
+  </select>
+</div>
+
+<div id="counties" style="position:relative;" >
+</div>
 
 How to remove overlap? The method I show here iterates through the marks, calculates overlaps and moves each mark away from overlapping marks and repeats until there is no more overlap left. For the sake of aesthetics, this movement is implemented as a repulsive force that overlapping marks apply on each other, plus friction to stop marks from moving too much once they no longer overlap. The algorithm handles rectangular marks of different sizes for a use case where the size or shape of marks represent some property.
 
@@ -31,9 +52,7 @@ I also add an attractive force to bring outlier marks closer in to reduce space 
 Since I'm resolving overlaps and spaces with made up repulsive and attractive forces between marks, I wonder if I could use d3's network force layout methods instead. I would need to add some kind of non-overlapping nodes constraint, maybe a minimum distance, but one that can handle rectangular nodes of different shapes and sizes. I'm not very familiar with these d3 functions so am not sure if this is easily implemented.
 
 
-The below sketch shows the algorithm at work. Starting with a random arrangement of 10 rectangles of different sizes, the sketch shows how the positions of rectangles change after applying successive rounds of repulsive/attractive forces. The dark orange rectangles show the updating positions, while the light orange filled in rectangles show the original positions of the rectangles for comparison. The updating stops once the total velocity of all marks is below a low threshold, or the algorithm has run through a large number of iterations. 
-
-d3
+The below sketch shows the algorithm at work. Starting with a random arrangement of 10 rectangles of different sizes, the sketch shows how the positions of rectangles change after applying successive rounds of repulsive/attractive forces. The dark orange rectangles show the updating positions, while the light orange filled in rectangles show the original positions of the rectangles for comparison. The updating stops once the total velocity of all marks is below a low threshold, or the algorithm has run through a large number of iterations. With a small number of rectangles (in this case 10) that are allowed to move arbitrarily far apart from each other (including out of view), the algorithm usually finishes quickly (in this case usually within 100 iterations).
 
 <div id="button" style="position:relative;" ></div>
 <div id="carto2" style="position:relative;" ></div>
@@ -44,6 +63,7 @@ d3
 <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
 
 <script src="/sketches/carto/counties_bar2.js"></script>
+<script src="/sketches/carto/counties.js"></script>
 <script src="/sketches/carto/update.js"></script>
 <script src="/sketches/carto/carto_d3_static.js"></script>
 

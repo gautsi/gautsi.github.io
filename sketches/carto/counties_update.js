@@ -20,8 +20,8 @@ function countyUpdateConfig() {
     transDuration: 1000
   };
 
-  config.bodyHeight = height - margin.top - margin.bottom;
-  config.bodyWidth = width - margin.left - margin.right;
+  config.bodyHeight = config.height - config.margin.top - config.margin.bottom;
+  config.bodyWidth = config.width - config.margin.left - config.margin.right;
   config.container
     .attr("width", config.bodyWidth)
     .attr("height", config.bodyHeight);
