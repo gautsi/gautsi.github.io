@@ -12,3 +12,11 @@ Doctor's (OB) office, S still pregnant, I left while we were still in the waitin
 ### 04/03/19
 
 I have a younger brother younger than D, we are visiting Texas and are at his apartment, S is trying to get N to change a flight ticket but she isn't doing it, she tells me to help but I say later, she and younger brother headed to our rented apartment and he tells her you know no one in the family likes you because you are bossy. 
+
+
+### 04/06/19
+
+A born in L and D, like traffic lights green Take, Yello Neutral, red Do not take lights, A's light was Neutral but S thought they were just trying to get her to stay an extra night, hospital mostly empty on weekend, I was there but not during labor
+
+
+Fancy vegan restaurant like dirt candy, S trying to pick out red wine, others at the table including Nidhi, someone else and S suggested getting bottle instead of individual 

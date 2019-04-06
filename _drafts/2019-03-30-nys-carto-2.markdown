@@ -57,6 +57,9 @@ The below sketch shows the algorithm at work. Starting with a random arrangement
 <div id="button" style="position:relative;" ></div>
 <div id="carto2" style="position:relative;" ></div>
 
+We see in the sketch that the algorithm tends to keep the rectangles in the same relative places as the original positions while spreading them out enough to remove overlaps. Single outliers might move far to be closer to neighbors but generally keep the same relative direction to the other rectangles. Multiple non-overlapping outliers that touch each other will not move however.
+
+In the next and last [part]({% post_url 2019-03-30-nys-carto-3 %}) we will apply this algorithm to New York State county squares and attempt to build a visualization of the election that gives a good idea of candidate's relative popular votes while retaining some of the geographic information of the NYT map.
 
 
 <script src="https://d3js.org/d3.v5.min.js"></script>

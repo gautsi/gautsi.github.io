@@ -5,6 +5,8 @@ date:   2019-03-30
 categories: post
 ---
 
+In the last [part]({% post_url 2019-03-23-nys-carto-2 %}) we began to consider a possible cartogram of New York State counties that is true to general relative positions but gives equal visual space to all counties. Namely each county is represented by a square in a location close to where the corresponding county is on a map. We first tried centering the square on the county centroid but noticed that depending on the size of the squares, they are too small and far apart to use as areas for further marks or too big and overlap with each other or both.
+
 Applying marks algorithm to counties
 
 <div id="countiesUpdate" style="position:relative;" >
