@@ -45,7 +45,6 @@ function getBarScales(config, data) {
   let { width, height, margin, bodyHeight, bodyWidth, container } = config;
 
   let maximumCount = d3.max(data.votes.map(a => a.totalVotes));
-  console.log(maximumCount);
 
   let xScale = d3.scaleLinear()
       .range([0, bodyWidth])
@@ -112,7 +111,6 @@ function drawAxesBarChart(config, scales, data){
 
 function showBarData(data) {
   prepData(data);
-  console.log(data);
   let config = getBarConfig();
   let scales = getBarScales(config, data);
   drawBar(config, scales, data);

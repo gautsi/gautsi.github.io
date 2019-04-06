@@ -25,7 +25,7 @@ let button = d3
   .append("button");
 
 button.text(buttonStatus)
-  .on("click", function() {start()});
+  .on("click", start);
 
 
 let width = 400;

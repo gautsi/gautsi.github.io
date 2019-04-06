@@ -206,11 +206,10 @@ function showCountyBarVotesMap(county) {
 }
 
 function transBar(county) {
-  console.log(county);
   cvcConfig.selectedCounty = county;
   cvcConfig.barXScale.domain([0, d3.max(cvcConfig.countyBars.map(c => c[county]))]);
   cvcConfig.domAxisX.transition().duration(1000).call(cvcConfig.axisX.scale(cvcConfig.barXScale));
-  cvcConfig.barText.transition().duration(1000).text(county);
+  cvcConfig.barText.text(county);
   cvcConfig.barBody
     .selectAll("rect")
     .transition()

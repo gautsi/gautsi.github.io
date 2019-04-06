@@ -45,7 +45,12 @@ function updateNodes(ns) {
         .map(i => (d.pos[i] <= (d2.pos[i] + d2.size[i]) & (d.pos[i] + d.size[i]) >= d2.pos[i]))
         .reduce((a, b) => a & b);
 
-      let vAdd = overlap ? eltAdd(d.pos, scaMult(d2.pos, -1)) : [0, 0];
+      let overlapUpd = eltAdd(d.center, scaMult(d2.center, -1));
+
+      // scale overlap force by distance between centers: smaller distance = bigger force
+      let overlapUpdScale = scaMult(overlapUpd, 20 / (0.1 + dist(d.center, d2.center)));
+
+      let vAdd = overlap ? overlapUpdScale : [0, 0];
 
       d.v = eltAdd(d.v, scaMult(vAdd, 0.01));
     });

@@ -4,21 +4,27 @@ function countyUpdateConfig() {
     darkColor: d3.schemeDark2[1],
     lightWidth: 1,
     darkWidth: 2,
-    width: 500,
-    height: 500,
+    width: 600,
+    height: 600,
     margin: {
         top: 10,
         bottom: 10,
         left: 10,
         right: 10},
     container: d3.select("#countiesTtlVotes").append("svg"),
-    currSquareSize: 30,
+    button: d3.select("#button").append("button"),
+    sizeSelect: d3.select("#squareSize").on("change", changeSquareSize),
+    buttonStatus: "reset",
+    currSquareSize: 20,
     projection: d3.geoMercator(),
     countyPaths: [],
     countyCentroids: [],
     countySquares: [],
     transDuration: 1000
   };
+
+  config.button.text(config.buttonStatus).on("click", showMapUpd);
+
 
   config.bodyHeight = config.height - config.margin.top - config.margin.bottom;
   config.bodyWidth = config.width - config.margin.left - config.margin.right;
@@ -54,18 +60,8 @@ d3.json("/assets/counties/us_counties.json").then(function (allCounties) {
   cuConfig.countyCentroids = nyCounties.features.map(d => {
     return { "centroid": cuConfig.path.centroid(d), "name": d.properties.NAME };
   });
-
-  cuConfig.countySquares = cuConfig.countyCentroids.map(d => {
-    return {
-      "pos": eltAdd(d.centroid, scaMult([cuConfig.currSquareSize, cuConfig.currSquareSize], -0.5)),
-      "size": [cuConfig.currSquareSize, cuConfig.currSquareSize],
-      "v": [0, 0],
-      "center": d.centroid
-    }
-  });
-
   cuConfig.statusText.text("");
-  showMapUpd();
+  drawCountyPathsUpd();
 });
 
 function drawCountyPathsUpd() {
@@ -80,10 +76,10 @@ function drawCountyPathsUpd() {
 }
 
 function drawCountySquaresUpd(squares) {
-  let sq = cuConfig.container.selectAll("squares")
+  cuConfig.sq = cuConfig.container.selectAll("squares")
     .data(squares);
 
-  sq.enter()
+  cuConfig.sq.enter()
     .append("rect")
     .attr("x", d => d.pos[0])
     .attr("y", d => d.pos[1])
@@ -93,7 +89,7 @@ function drawCountySquaresUpd(squares) {
     .attr("stroke", cuConfig.darkColor)
     .attr("stroke-width", cuConfig.darkWidth);
 
-  sq.exit().remove();
+  cuConfig.sq.exit().remove();
 }
 
 function drawBackgroundUpd() {
@@ -106,21 +102,46 @@ function drawBackgroundUpd() {
     .attr("fill", "white");
 }
 
-function showMapUpd() {
-  drawCountyPathsUpd();
-  drawCountySquaresUpd(cuConfig.countySquares);
-
-  let moveTimer = d3.timer(function(elapsed) {
-    let currTtlVel = updateNodes(cuConfig.countySquares);
-
-    drawBackgroundUpd();
-    drawCountySquaresUpd(cuConfig.countySquares);
-
-
-    if (elapsed > 100000 | currTtlVel < 0.5) {
-      moveTimer.stop();
-      drawCountyPathsUpd();
-      drawCountySquaresUpd(cuConfig.countySquares);
+function makeCountySquares() {
+  cuConfig.countySquares = cuConfig.countyCentroids.map(d => {
+    return {
+      "pos": eltAdd(d.centroid, scaMult([cuConfig.currSquareSize, cuConfig.currSquareSize], -0.5)),
+      "size": [cuConfig.currSquareSize, cuConfig.currSquareSize],
+      "v": [0, 0],
+      "center": d.centroid
     }
-  }, 1000);
+  });
+}
+
+function showMapUpd() {
+  drawBackgroundUpd();
+  drawCountyPathsUpd();
+  if (cuConfig.buttonStatus === "reset") {
+    makeCountySquares();
+    drawCountySquaresUpd(cuConfig.countySquares);
+    cuConfig.buttonStatus = "update";
+    cuConfig.button.text("update");
+  } else if (cuConfig.buttonStatus === "update") {
+
+    let moveTimer = d3.timer(function(elapsed) {
+      let currTtlVel = updateNodes(cuConfig.countySquares);
+
+      drawBackgroundUpd();
+      drawCountySquaresUpd(cuConfig.countySquares);
+
+      if (elapsed > 100000 | currTtlVel < 0.5) {
+        moveTimer.stop();
+        drawCountyPathsUpd();
+        drawCountySquaresUpd(cuConfig.countySquares);
+        cuConfig.buttonStatus = "reset";
+        cuConfig.button.text("reset");
+      }
+    });
+  }
+}
+
+function changeSquareSize() {
+  let squareSizeSelect = document.getElementById("squareSize");
+  cuConfig.currSquareSize = Number(squareSizeSelect.options[squareSizeSelect.selectedIndex].value);
+  makeCountySquares();
 }

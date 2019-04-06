@@ -5,10 +5,19 @@ date:   2019-03-30
 categories: post
 ---
 
-In the last [part]({% post_url 2019-03-23-nys-carto-2 %}) we began to consider a possible cartogram of New York State counties that is true to general relative positions but gives equal visual space to all counties. Namely each county is represented by a square in a location close to where the corresponding county is on a map. We first tried centering the square on the county centroid but noticed that depending on the size of the squares, they are too small and far apart to use as areas for further marks or too big and overlap with each other or both.
+In the previous [part]({% post_url 2019-03-23-nys-carto-2 %}) we began to consider a possible cartogram of New York State counties that is true to general relative positions but gives equal visual space to all counties. Namely each county is represented by a square in a location close to where the corresponding county is on a map. We first tried centering the square on the county centroid but noticed that depending on the size of the squares, they are too small and far apart to use as areas for further marks or too big and overlap with each other or both.
 
-Applying marks algorithm to counties
-
+<div id="button" style="float:left;" ></div>
+<div id="squareSizeSelection" style="overflow:hidden; padding-left:10px;">
+square size
+  <select id="squareSize">
+    <option value="5">5</option>
+    <option value="10">10</option>
+		<option value="20" selected="selected">20</option>
+    <option value="30">30</option>
+    <option value="40">40</option>
+  </select>
+</div>
 <div id="countiesUpdate" style="position:relative;" >
 </div>
 
