@@ -178,3 +178,11 @@ A's dry skin is much better on his chest and legs but worse on his forehead. Yes
 We know his nails are usually sharp, and perhaps if we cut them he wouldn't scratch himself open, but cutting his nails is not for the faint of heart because they are small, much smaller than even the small baby nail cutter we got exactly for this purpose. With the amount he squirms one person has to fold a finger tightly as the other carefully takes tiny pieces of the nail off. Sometime we use a nail file, which doesn't shorten the nails but does I think help make them softer.
 
 A wants to scratch his forehead and struggles against all of our attempts to keep him from doing so. It must feel like torture for him to have an itchy face and forehead and not be able to scratch, and not know as we do that scratching will make it worse. By this morning his scratches had scabbed, hopefully the skin will heal today take to our oil massage regimen.
+
+## 04/08/19
+
+A's skin has improved and softened. The scratches on his forehead are now small scabs and he seems to be less interested in scratching. This weekend we were pretty aggressive with applying coconut oil, a balm that friend gave us for dry skin and hydrocortisone cream to A's forehead, chest and legs almost whenever he needed a diaper change, which I think helped. But I feel my eczema is coming back, the back of my right hand worryingly itchy every now and then.
+
+Today is S's and my second wedding anniversary. Late last night we A was tentatively sleeping in the bassinet, S and I reminisced about out favorite memories from the last two years. We remembered hanging out with friends at Sunita bar, concerts in the park, dinners at Dirt Candy and Modern Love, trips to Seattle, Vancouver, Montreal, Boulder. We remembered a night we got particularly drunk at Sunita bar plus drinks later at Dirst Candy, at a time when we were in the desperate midst of fertility treatment and a baby seemed too far away. We found out soon after that S was already pregnant that night.
+
+We realized with a smile last night that all of the memories we were talking about were all from before A. Perhaps we were pining for our lives before. We thought about our favorite A memory until now and for both of us it was whenever A smiled because everything feels right with the world when he does.
