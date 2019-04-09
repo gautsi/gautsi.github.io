@@ -5,7 +5,7 @@ date:   2019-03-30
 categories: post
 ---
 
-In the previous [part]({% post_url 2019-03-23-nys-carto-2 %}) we began to consider a possible cartogram of New York State counties that is true to general relative positions but gives equal visual space to all counties. Namely each county is represented by a square in a location close to where the corresponding county is on a map. We first tried centering the square on the county centroid but noticed that depending on the size of the squares, they are too small and far apart to use as areas for further marks or too big and overlap with each other or both.
+In the previous [part]({% post_url 2019-03-23-nys-carto-2 %}) we began to consider a possible cartogram of New York State counties that is true to general relative positions but gives equal visual space to all counties. Namely each county is represented by a square in a location close to where the corresponding county is on a map. We first tried centering the square on the county centroid but noticed that depending on the size of the squares, they are too small and far apart to use as areas for further marks or too big and overlap with each other or both. We apply the algorithm introduced in the previous part to separate the overlapping marks and bring the outlier ones closer to their neighbors:
 
 <div id="button" style="float:left;" ></div>
 <div id="squareSizeSelection" style="overflow:hidden; padding-left:10px;">
@@ -22,15 +22,28 @@ square size
 </div>
 
 
-County total votes
+We see that applying the algorithm to square sizes 20, 30 and 40 give arrangements of marks with relatively less white space that maintain the general shape of the state and general positionsof counties. The algorithm applied to smaller square sizes moves marks into far apart clusters which, while potentially useful in its own right (for example, perhaps defining regions from counties), does not work for the current goal of a better election map.
+
+With a square size of 40 then, we can reimagine our first bar chart from part one which showed total vote counts by county by placing each bar in its corresponding counties square. In other words, the dark grey area of each square represents the number of votes from that county:
+
 
 <div id="countiesTtlVotes" style="position:relative;" >
 </div>
 
-County votes
+Although more difficult to do precise comparisons between counties now, this chart still shows that a small number of counties have a large number of votes and vice versa, and also shows that the large vote counties are almost exclusively down state.
+
+Now we add in vote counts for each candidate:
 
 <div id="countiesVotes" style="position:relative;" >
 </div>
+
+The total color area of a candidate now accurately represents how many votes the candidate won in the state overall, but a precise comparison is still difficult. The chart also gives some information about where the votes were won.
+
+I think what stands out most clearly from this map is how skewed the state is towards the lower counties. That this was a democratic primary race in which only voters who were registered with the democratic party we're allowed to participate probably exacerbates the skewness but even in population the state is skewed towards NYC and Long Island.
+
+To help better understand how counties voted including the counties with few votes, I add a bar chart which by default shows total state vote counts but switches to showing a county's vote breakdown when the user hovers over the county with the mouse.
+
+I could see how this representation might itself be misleading if the winning candidate wins a small number of votes each from a large number of counties, but some other candidate wins a large number of votes from a few counties. In that case, the visualization would require comparing a scattered area with a concentrated one and could give an incorrect impression.
 
 
 <script src="https://d3js.org/d3.v5.min.js"></script>
