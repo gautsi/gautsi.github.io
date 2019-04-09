@@ -85,11 +85,12 @@ function start() {
     let moveTimer = d3.timer(function(elapsed) {
       numIterations += 1;
       let currTtlVel = updateNodes(nodes);
+      let currAvgVel = currTtlVel / nodes.length;
       drawBackground();
       drawCarto(origNodes, color = d3.schemeSet2[0], fill = d3.schemeSet2[1]);
       drawCarto(nodes, color = d3.schemeDark2[1], fill = "none");
 
-      if (elapsed > 100000 | currTtlVel < 0.5) {
+      if (elapsed > 100000 | currAvgVel < 0.05) {
         moveTimer.stop();
         buttonStatus = "reset";
         button.text("reset");

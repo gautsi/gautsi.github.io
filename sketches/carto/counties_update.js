@@ -14,7 +14,7 @@ function countyUpdateConfig() {
     container: d3.select("#countiesTtlVotes").append("svg"),
     button: d3.select("#button").append("button"),
     sizeSelect: d3.select("#squareSize").on("change", changeSquareSize),
-    buttonStatus: "reset",
+    buttonStatus: "update",
     currSquareSize: 20,
     projection: d3.geoMercator(),
     countyPaths: [],
@@ -62,6 +62,8 @@ d3.json("/assets/counties/us_counties.json").then(function (allCounties) {
   });
   cuConfig.statusText.text("");
   drawCountyPathsUpd();
+  makeCountySquares();
+  drawCountySquaresUpd(cuConfig.countySquares);
 });
 
 function drawCountyPathsUpd() {
@@ -77,9 +79,8 @@ function drawCountyPathsUpd() {
 
 function drawCountySquaresUpd(squares) {
   cuConfig.sq = cuConfig.container.selectAll("squares")
-    .data(squares);
-
-  cuConfig.sq.enter()
+    .data(squares)
+    .enter()
     .append("rect")
     .attr("x", d => d.pos[0])
     .attr("y", d => d.pos[1])
@@ -88,8 +89,6 @@ function drawCountySquaresUpd(squares) {
     .attr("fill", "none")
     .attr("stroke", cuConfig.darkColor)
     .attr("stroke-width", cuConfig.darkWidth);
-
-  cuConfig.sq.exit().remove();
 }
 
 function drawBackgroundUpd() {
@@ -105,43 +104,54 @@ function drawBackgroundUpd() {
 function makeCountySquares() {
   cuConfig.countySquares = cuConfig.countyCentroids.map(d => {
     return {
-      "pos": eltAdd(d.centroid, scaMult([cuConfig.currSquareSize, cuConfig.currSquareSize], -0.5)),
-      "size": [cuConfig.currSquareSize, cuConfig.currSquareSize],
-      "v": [0, 0],
-      "center": d.centroid
+      centroid: d.centroid,
+      pos: eltAdd(d.centroid, scaMult([cuConfig.currSquareSize, cuConfig.currSquareSize], -0.5)),
+      size: [cuConfig.currSquareSize, cuConfig.currSquareSize],
+      v: [0, 0],
+      center: d.centroid
     }
   });
 }
 
+function updateCountySquares() {
+  cuConfig.countySquares.forEach(d => {
+    d.pos = eltAdd(d.centroid, scaMult([cuConfig.currSquareSize, cuConfig.currSquareSize], -0.5));
+    d.size = [cuConfig.currSquareSize, cuConfig.currSquareSize];
+    d.v = [0, 0];
+    d.center = d.centroid;
+  });
+}
+
+
 function showMapUpd() {
   drawBackgroundUpd();
   drawCountyPathsUpd();
-  if (cuConfig.buttonStatus === "reset") {
-    makeCountySquares();
+  let moveTimer = d3.timer(function(elapsed) {
+    let currTtlVel = updateNodes(cuConfig.countySquares);
+    let currAvgVel = currTtlVel / cuConfig.countySquares.length;
+
+    drawBackgroundUpd();
     drawCountySquaresUpd(cuConfig.countySquares);
-    cuConfig.buttonStatus = "update";
-    cuConfig.button.text("update");
-  } else if (cuConfig.buttonStatus === "update") {
 
-    let moveTimer = d3.timer(function(elapsed) {
-      let currTtlVel = updateNodes(cuConfig.countySquares);
-
-      drawBackgroundUpd();
+    if (elapsed > 100000 | currAvgVel < 0.05) {
+      moveTimer.stop();
+      drawCountyPathsUpd();
       drawCountySquaresUpd(cuConfig.countySquares);
-
-      if (elapsed > 100000 | currTtlVel < 0.5) {
-        moveTimer.stop();
-        drawCountyPathsUpd();
-        drawCountySquaresUpd(cuConfig.countySquares);
-        cuConfig.buttonStatus = "reset";
-        cuConfig.button.text("reset");
-      }
-    });
-  }
+    }
+  });
 }
 
 function changeSquareSize() {
+  drawBackgroundUpd();
+  drawCountyPathsUpd();
+  drawCountySquaresUpd(cuConfig.countySquares);
+
   let squareSizeSelect = document.getElementById("squareSize");
   cuConfig.currSquareSize = Number(squareSizeSelect.options[squareSizeSelect.selectedIndex].value);
-  makeCountySquares();
+  updateCountySquares();
+  cuConfig.sq.transition().duration(cuConfig.transDuration)
+    .attr("x", d => d.pos[0])
+    .attr("y", d => d.pos[1])
+    .attr("width", d => d.size[0])
+    .attr("height", d => d.size[1]);
 }
