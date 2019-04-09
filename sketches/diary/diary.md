@@ -186,3 +186,13 @@ A's skin has improved and softened. The scratches on his forehead are now small 
 Today is S's and my second wedding anniversary. Late last night we A was tentatively sleeping in the bassinet, S and I reminisced about out favorite memories from the last two years. We remembered hanging out with friends at Sunita bar, concerts in the park, dinners at Dirt Candy and Modern Love, trips to Seattle, Vancouver, Montreal, Boulder. We remembered a night we got particularly drunk at Sunita bar plus drinks later at Dirst Candy, at a time when we were in the desperate midst of fertility treatment and a baby seemed too far away. We found out soon after that S was already pregnant that night.
 
 We realized with a smile last night that all of the memories we were talking about were all from before A. Perhaps we were pining for our lives before. We thought about our favorite A memory until now and for both of us it was whenever A smiled because everything feels right with the world when he does.
+
+## 04/09/19
+
+We had a nice anniversary yesterday. I left work exactly at 5 so I could stop by Cafe Grumpy to pick up coffee ground for a French press for S and a pumpkin bread for the both of us, and still make it back home in time before it got too dark for a walk. we tried out the become gemini carrier for the walk, with A strapped to me. It felt sturdy and A didn't fidget much, especially when I was moving. It required S to help me put it on but I feel after becoming more comfortable with it we could put it on by ourselves.
+
+We walked done Burns Street to the bank on 75th and back. On the walk there A was transfixed by the outside, all new sights for him, at least at that angle. It was I think a preview of A's introduction to the outside world. We are lucky to be his first guides.
+
+S and I made enchiladas that came out incredibly delicious. The sauce we made was a first for us, a green sauce with roasted poblano and jalepeno peppers and tomatilos and might be the best enchilada sauce we have made yet. We filled the enchiladas with kale, black beans, potatoes and jackfruit (leftover from when our friend P came over a few days ago and made us tacos. S and I both ate way too much.
+
+A was pretty calm yesterday. I think now that his dry skin is much better, he is overall less bothered.
