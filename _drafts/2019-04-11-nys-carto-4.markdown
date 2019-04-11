@@ -1,0 +1,31 @@
+---
+layout: post
+title:  "NYS Counties Cartogram Part 4"
+date:   2019-04-11
+categories: post
+---
+
+<div id="button" style="float:left;" ></div>
+<div id="squareSizeSelection" style="overflow:hidden; padding-left:10px;">
+square size
+  <select id="squareSize">
+    <option value="5">5</option>
+    <option value="10">10</option>
+		<option value="20" selected="selected">20</option>
+    <option value="30">30</option>
+    <option value="40">40</option>
+  </select>
+</div>
+
+<div id="usUpdate" style="position:relative;"></div>
+
+
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
+
+<script src="/sketches/carto/update.js"></script>
+<script src="/sketches/carto/us_update.js"></script>
+
+### Notes
+
+### To do

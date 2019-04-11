@@ -11,7 +11,7 @@ function countyUpdateConfig() {
         bottom: 10,
         left: 10,
         right: 10},
-    container: d3.select("#countiesTtlVotes").append("svg"),
+    container: d3.select("#countiesUpdate").append("svg"),
     button: d3.select("#button").append("button"),
     sizeSelect: d3.select("#squareSize").on("change", changeSquareSize),
     buttonStatus: "update",

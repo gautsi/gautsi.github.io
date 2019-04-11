@@ -18,11 +18,10 @@ square size
     <option value="40">40</option>
   </select>
 </div>
-<div id="countiesUpdate" style="position:relative;" >
-</div>
 
+<div id="countiesUpdate" style="position:relative;"></div>
 
-We see that applying the algorithm to square sizes 20, 30 and 40 give arrangements of marks with relatively less white space that maintain the general shape of the state and general positionsof counties. The algorithm applied to smaller square sizes moves marks into far apart clusters which, while potentially useful in its own right (for example, perhaps defining regions from counties), does not work for the current goal of a better election map.
+We see that applying the algorithm to square sizes 20, 30 and 40 give arrangements of marks with relatively less white space that maintain the general shape of the state and general positions of counties. The algorithm applied to smaller square sizes moves marks into far apart clusters which, while potentially useful in its own right (for example, perhaps defining regions from counties), does not work for the current goal of a better election map.
 
 With a square size of 40 then, we can reimagine our first bar chart from part one which showed total vote counts by county by placing each bar in its corresponding counties square. In other words, the dark grey area of each square represents the number of votes from that county:
 
@@ -59,6 +58,6 @@ I could see how this representation might itself be misleading if the winning ca
 - learning animations from here: http://duspviz.mit.edu/d3-workshop/
 
 ### To do
-- [ ] add data status text
-- [ ] add counties/centroids/squares transitions
-- [ ] add square size slider
+- [x] add data status text
+- [x] add counties/centroids/squares transitions
+- [x] add square size slider
