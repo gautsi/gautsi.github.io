@@ -73,6 +73,12 @@ In the next and last [part]({% post_url 2019-03-30-nys-carto-3 %}) we will apply
 ### Notes
 
 - votes are from [here](https://www.elections.ny.gov/2018ElectionResults.html)
+- cartogram resources
+  - [paper 1](https://www.jstor.org/stable/208794?seq=1#page_scan_tab_contents)
+  - [paper 2](https://www.sciencedirect.com/science/article/pii/S0925772106000770)
+  - [paper 3](https://arxiv.org/pdf/1606.00464.pdf)
+  - [paper 4](https://arxiv.org/abs/1605.08485)
+  - [paper 5](http://www.geog.ucsb.edu/~kclarke/G232/ToblerCartograms.pdf)
 
 ### To do
 - [x] print status on carto calc sketch
