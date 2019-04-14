@@ -62,3 +62,4 @@ I could see how this representation might itself be misleading if the winning ca
 ### Notes
 - I got the US counties geographic shapefile from the [US Census Bureau](https://www.census.gov/geographies/mapping-files/2017/geo/kml-cartographic-boundary-files.html) and converted to geojson following Mike Bostock's [guide](https://medium.com/@mbostock/command-line-cartography-part-1-897aa8f8ca2c)
 - learning animations from here: <http://duspviz.mit.edu/d3-workshop/>
+- I apply the algorithm to US states in the next [part]({% post_url 2019-04-11-nys-carto-4 %})

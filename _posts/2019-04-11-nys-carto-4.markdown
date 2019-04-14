@@ -41,9 +41,12 @@ square size
 
 <script src="/sketches/carto/update.js"></script>
 <script src="/sketches/carto/us_update.js"></script>
-<!--<script src="/sketches/carto/world_update.js"></script>-->
 
 ### Notes
+- US states geojson from [here](https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json)
+
+
+
 <!--
 - world countries geojson from here: https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson
 -->
