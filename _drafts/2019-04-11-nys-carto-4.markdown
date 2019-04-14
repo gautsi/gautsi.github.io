@@ -20,6 +20,7 @@ square size
 <div id="usUpdate" style="position:relative;"></div>
 
 
+<!--
 <div id="worldButton" style="float:left;" ></div>
 <div id="worldSquareSizeSelection" style="overflow:hidden; padding-left:10px;">
 square size
@@ -32,7 +33,7 @@ square size
   </select>
 </div>
 
-<div id="worldUpdate" style="position:relative;"></div>
+<div id="worldUpdate" style="position:relative;"></div>-->
 
 
 <script src="https://d3js.org/d3.v5.min.js"></script>
@@ -40,10 +41,9 @@ square size
 
 <script src="/sketches/carto/update.js"></script>
 <script src="/sketches/carto/us_update.js"></script>
-<script src="/sketches/carto/world_update.js"></script>
+<!--<script src="/sketches/carto/world_update.js"></script>-->
 
 ### Notes
-
+<!--
 - world countries geojson from here: https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson
-
-### To do
+-->

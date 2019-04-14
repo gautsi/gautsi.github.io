@@ -14,13 +14,26 @@ and showed this bar chart as an alternative that better shows the popular vote r
 <div id="bar2" style="position:relative;" >
 </div>
 
-Researching other ways to represent geographic objects brought me to the concept of a cartogram. According to Wikipedia, a cartogram is a ...
+### Cartograms
 
-There are many different ways to choose and organize the marks in a cartogram. Here is a paper that looks at various methods and compares by expressiveness and effectiveness of communicating geographic and other values...
+Researching other ways to represent geographic objects brought me to the concept of a cartogram. A cartogram is a visual representation of geographic objects in which the areas of objects are distorted to represent some statistic. I've found this survey paper[^1] by Nusrat and Koburov to be a helpful introduction to the history of cartograms and some of the many algorithms for generating them. The paper also describes different information that the various techniques aim to preserve, like the shapes of the geometric objects, or their adjacencies.
+
+[^1]: Nusrat and Koburov, The State of the art in Cartograms, [arxiv](https://arxiv.org/abs/1605.08485)
+
+
+The most common way that people build cartograms in d3 seems to be the [topogram](https://github.com/shawnbot/topogram) implementation of the Dougenik, Chrisman, and Niemeyer[^2] algorithm for a continuous cartogram. [Here](http://prag.ma/code/d3-cartogram/?segmentized#popest/2011) is an example of the implementation in use. I don't use this type of cartogram below because I'm not looking to preserve shapes of counties and adjacencies, and I want to use the mark for each county to further show the vote counts for the four candidates as I describe below.
+
+[^2]: Dougenik, Chrisman, and Niemeyer, An algorithm to construct continuous area cartograms, The Professional Geographer 37, 1 (1985), 75–81
+
+### An attempt at an election cartogram
+
+**Note** that my following description and implementation of a type of cartogram was made before I discovered through the Nusrat and Koburov paper that I was essentially making a Demers cartogram[^3]. Also before I found examples of Demers-like cartogram implementations using d3 force simulations, see [this](https://bl.ocks.org/cmgiven/9d6bc46cf586738458c13dd2b5dadd84) and [this](https://bl.ocks.org/mbostock/4055889).
+
+[^3]: Bortins, Demers, and Clarke, Cartogram types, <http://www.ncgia.ucsb.edu/projects/Cartogram_Central/types.html>
 
 For a cartogram of the election, the shape of a county didn't need preserving but rather its position in the state and relative to other counties. So perhaps we could first represent each county by a square, and then fill each square with representations of candidate vote totals in the county. All squares could be equal in size, so that no county occupies more space on the canvas than any other. But where do we place the county squares? The locations of the squares overall and relative to the other squares are how we will communicate the geographical structures in the data so we want to place them in geographically accurate positions.
 
-One way we could place the squares is to center them on the centroids of the county shapes. The next sketch shows the counties, their centroids and squares centered at the centroids and lets you change the size of the squares. This seems like a reasonable way to place square, except that depending on the size of the square they overalap. Overlap is a problem for us because it can make easily see differences between properties of the county difficult. For the smallest square size of 5, there is no overlap but the squares are also prohibitively small to place other marks in. For larger square sizes like 20, there is overlap in various parts of the state, especially NYC.
+One way we could place the squares is to center them on the centroids of the county shapes. The next sketch shows the counties, their centroids and squares centered at the centroids and lets you change the size of the squares. This seems like a reasonable way to place square, except that depending on the size of the square they overlap. Overlap is a problem for us because it can make it difficult to see differences between properties of the overlapping counties. For the smallest square size of 5, there is no overlap but the squares are also prohibitively small to place other marks in. For larger square sizes like 20, there is overlap in various parts of the state, especially NYC.
 
 <div id="markSelection" style="float:left;">
 visual mark
@@ -45,12 +58,13 @@ square size
 <div id="counties" style="position:relative;" >
 </div>
 
+### Removing overlap
+
 How to remove overlap? The method I show here iterates through the marks, calculates overlaps and moves each mark away from overlapping marks and repeats until there is no more overlap left. For the sake of aesthetics, this movement is implemented as a repulsive force that overlapping marks apply on each other, plus friction to stop marks from moving too much once they no longer overlap. The algorithm handles rectangular marks of different sizes for a use case where the size or shape of marks represent some property.
 
 I also add an attractive force to bring outlier marks closer in to reduce space between marks which in my idea for the election map would not be directly used and which might make comparison between counties a little more difficult. For each mark the three closest neighboring marks are identified (by distance between the edges of the marks) and pull the mark closer to them, as long as the mark is not already adjacent to one of them (because we don't want to introduce more overlaps!).
 
-Since I'm resolving overlaps and spaces with made up repulsive and attractive forces between marks, I wonder if I could use d3's network force layout methods instead. I would need to add some kind of non-overlapping nodes constraint, maybe a minimum distance, but one that can handle rectangular nodes of different shapes and sizes. I'm not very familiar with these d3 functions so am not sure if this is easily implemented.
-
+### Sketch: rearranging random rectangles
 
 The below sketch shows the algorithm at work. Starting with a random arrangement of 10 rectangles of different sizes, the sketch shows how the positions of rectangles change after applying successive rounds of repulsive/attractive forces. The dark orange rectangles show the updating positions, while the light orange filled in rectangles show the original positions of the rectangles for comparison. The updating stops once the total velocity of all marks is below a low threshold, or the algorithm has run through a large number of iterations. With a small number of rectangles (in this case 10) that are allowed to move arbitrarily far apart from each other (including out of view), the algorithm usually finishes quickly (in this case usually within 100 iterations).
 
@@ -73,13 +87,9 @@ In the next and last [part]({% post_url 2019-03-30-nys-carto-3 %}) we will apply
 ### Notes
 
 - votes are from [here](https://www.elections.ny.gov/2018ElectionResults.html)
-- cartogram resources
-  - [paper 1](https://www.jstor.org/stable/208794?seq=1#page_scan_tab_contents)
-  - [paper 2](https://www.sciencedirect.com/science/article/pii/S0925772106000770)
-  - [paper 3](https://arxiv.org/pdf/1606.00464.pdf)
-  - [paper 4](https://arxiv.org/abs/1605.08485)
-  - [paper 5](http://www.geog.ucsb.edu/~kclarke/G232/ToblerCartograms.pdf)
+- in addition to the Nusrat and Koburov paper, I found Dorling's survey paper[^4] a great read, and want to learn more about the Dorling cellular automata technique for making a cartogram
+- as I learn more about d3 force layouts, I think they're appropriate for building Demers-like cartograms. To that end, [d3-bboxCollide](https://github.com/emeeks/d3-bboxCollide) might be helful
 
-### To do
-- [x] print status on carto calc sketch
-- [ ] add counties/centriods/squares sketch
+### References
+
+[^4]: Dorling, Area Cartograms: Their Use and Creation, <http://www.dannydorling.org/wp-content/files/dannydorling_publication_id1448.pdf>

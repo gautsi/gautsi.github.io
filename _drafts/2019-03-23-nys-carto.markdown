@@ -42,19 +42,4 @@ In the next [part]({% post_url 2019-03-23-nys-carto-2 %}) I'll talk about the co
 ### Notes
 
 - votes are from [here](https://www.elections.ny.gov/2018ElectionResults.html)
-
-p5
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.8/p5.min.js"></script>
-<script src='/sketches/my_colors.js' type="text/javascript"></script>
-<script src='/sketches/my_functions.js' type="text/javascript"></script>
-
-
-```
-<div id="carto" style="height: 400px; width:400px; position:relative;" ></div>
-<script src="/sketches/carto/carto.js"></script>
-```
-
-
-### To do
-- [x] follow https://observablehq.com/@d3/stacked-bar-chart to make a stacked bar chart
+- I followed [this](https://observablehq.com/@d3/stacked-bar-chart) example to make a stacked bar chart in d3

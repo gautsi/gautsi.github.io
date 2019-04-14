@@ -5,7 +5,11 @@ date:   2019-03-30
 categories: post
 ---
 
-In the previous [part]({% post_url 2019-03-23-nys-carto-2 %}) we began to consider a possible cartogram of New York State counties that is true to general relative positions but gives equal visual space to all counties. Namely each county is represented by a square in a location close to where the corresponding county is on a map. We first tried centering the square on the county centroid but noticed that depending on the size of the squares, they are too small and far apart to use as areas for further marks or too big and overlap with each other or both. We apply the algorithm introduced in the previous part to separate the overlapping marks and bring the outlier ones closer to their neighbors:
+In the previous [part]({% post_url 2019-03-23-nys-carto-2 %}) we began to consider a possible cartogram of New York State counties that is true to general relative positions but gives equal visual space to all counties. Namely each county is represented by a square in a location close to where the corresponding county is on a map. We first tried centering the square on the county centroid but noticed that depending on the size of the squares, they are too small and far apart to use as areas for further marks or too big and overlap with each other or both.
+
+### Rearranging county marks
+
+We apply the algorithm introduced in the previous part to separate the overlapping marks and bring the outlier ones closer to their neighbors:
 
 <div id="button" style="float:left;" ></div>
 <div id="squareSizeSelection" style="overflow:hidden; padding-left:10px;">
@@ -22,6 +26,8 @@ square size
 <div id="countiesUpdate" style="position:relative;"></div>
 
 We see that applying the algorithm to square sizes 20, 30 and 40 give arrangements of marks with relatively less white space that maintain the general shape of the state and general positions of counties. The algorithm applied to smaller square sizes moves marks into far apart clusters which, while potentially useful in its own right (for example, perhaps defining regions from counties), does not work for the current goal of a better election map.
+
+### Election cartograms
 
 With a square size of 40 then, we can reimagine our first bar chart from part one which showed total vote counts by county by placing each bar in its corresponding counties square. In other words, the dark grey area of each square represents the number of votes from that county:
 
@@ -54,10 +60,5 @@ I could see how this representation might itself be misleading if the winning ca
 <script src="/sketches/carto/counties_carto2.js"></script>
 
 ### Notes
-- where does counties geojson come from?
-- learning animations from here: http://duspviz.mit.edu/d3-workshop/
-
-### To do
-- [x] add data status text
-- [x] add counties/centroids/squares transitions
-- [x] add square size slider
+- I got the US counties geographic shapefile from the [US Census Bureau](https://www.census.gov/geographies/mapping-files/2017/geo/kml-cartographic-boundary-files.html) and converted to geojson following Mike Bostock's [guide](https://medium.com/@mbostock/command-line-cartography-part-1-897aa8f8ca2c)
+- learning animations from here: <http://duspviz.mit.edu/d3-workshop/>
