@@ -22,3 +22,13 @@ A born in L and D, like traffic lights green Take, Yello Neutral, red Do not tak
 Fancy vegan restaurant like dirt candy, S trying to pick out red wine, others at the table including Nidhi, someone else and S suggested getting bottle instead of individual
 
 Out with Jackie and one of Jackie's friends, S didn't know how long she didn't want to be out, fancy club, S wanted to coat check, Jackie's friend (random staten-islandy girl) being bratty making fun of S for not being cool
+
+### 04/20/19
+
+With Amarilis and Amber in An Arbor looking for an apartment after a miscarriage of Anav
+
+With Nehal and Sharing in a bubble going fast over the East River
+
+### 04/25/19
+
+S and I are at Edgies measuring the floor plan, I leave in the middle of it, S doesn't know where I am, someone else at Edgies offers to help look for me, S and the person search for me for a while, they find me at a coffee shop, the other person says I'm talking to another woman but S can't tell, I'm drinking a glass of water, S walks up to me and asks why I left
