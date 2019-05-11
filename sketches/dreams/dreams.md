@@ -32,3 +32,11 @@ With Nehal and Sharing in a bubble going fast over the East River
 ### 04/25/19
 
 S and I are at Edgies measuring the floor plan, I leave in the middle of it, S doesn't know where I am, someone else at Edgies offers to help look for me, S and the person search for me for a while, they find me at a coffee shop, the other person says I'm talking to another woman but S can't tell, I'm drinking a glass of water, S walks up to me and asks why I left
+
+## 05/03/19
+
+S and I are taking a history class together in college, we are married, S is annoyed that I got a 98 on the first midterm while she got an 80, annoyed at me because I was acting like I didn't know anything in the class, always asking her questions, S decides to drop the class, professor is a friend's mother
+
+## 05/11/19
+
+S and Antonella drinking and eating cheese together, S crashes car at gas station into pump, takes it back to mommy's and pappa's in Staten Island, was wondering whether to tell or if they would notice, drives it the next day to get pizza, rented a party house in NJ the day of the crash
