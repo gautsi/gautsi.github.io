@@ -1,0 +1,13 @@
+---
+layout: post
+title:  "NYC DOT Cams"
+date:   2019-06-01
+categories: post
+---
+
+
+<div id="nycdot" style="position:relative;" >
+</div>
+
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="/sketches/nyc_dot/nyc_dot.js"></script>
