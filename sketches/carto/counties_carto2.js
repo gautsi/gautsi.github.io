@@ -125,11 +125,8 @@ Promise.all([
       cvcConfig.statusText.text("");
       showCountyCartoVotesMap();
       showCountyBarVotesMap(cvcConfig.selectedCounty);
+      // downloadObjectAsJson(cvcConfig.countySquares, "updated_marks.json");
     }
-
-    //cvcConfig.statusText.text("download marks...");
-    //downloadObjectAsJson(cvcConfig.countySquares, "county_squares.json");
-
   });
 
   cvcConfig.countySquaresStacked = d3.stack().keys(cvcConfig.candidatesFixed)(cvcConfig.countySquares);
