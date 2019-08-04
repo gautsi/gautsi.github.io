@@ -2,7 +2,7 @@ let store = {};
 
 function loadData() {
     return Promise.all([
-        d3.csv("https://raw.githubusercontent.com/gautsi/gen-purpose-repo/master/baby_times/baby_times_prep_ver3_080319.csv"),
+        d3.csv("https://raw.githubusercontent.com/gautsi/gen-purpose-repo/master/baby_times/baby_times_prep_ver1_080419.csv"),
     ]).then(datasets => {
         store.times = datasets[0];
         return store;
@@ -11,9 +11,15 @@ function loadData() {
 
 function formatData(times) {
   times.map(d => {
-    d.date = new Date(d.dt.split(" ")[0]);
+    d.date = new Date(
+      year = d.dt.split(" ")[0].split("-")[0],
+      month = Number(d.dt.split(" ")[0].split("-")[1]) - 1,
+      day = d.dt.split(" ")[0].split("-")[2]);
     d.timeOfDay = d3.timeParse("%H:%M:%S")(d.dt.split(" ")[1]);
-    d.endDate = new Date(d.next_dt.split(" ")[0]);
+    d.endDate = new Date(
+      year = d.next_dt.split(" ")[0].split("-")[0],
+      month = Number(d.next_dt.split(" ")[0].split("-")[1]) - 1,
+      day = d.next_dt.split(" ")[0].split("-")[2]);
     d.endTimeOfDay = d3.timeParse("%H:%M:%S")(d.next_dt.split(" ")[1]);
   });
 }
