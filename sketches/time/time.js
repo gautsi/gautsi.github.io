@@ -2,7 +2,7 @@ let store = {};
 
 function loadData() {
     return Promise.all([
-        d3.csv("https://raw.githubusercontent.com/gautsi/gen-purpose-repo/master/baby_times/baby_times_prep_ver1_080819.csv"),
+        d3.csv("https://raw.githubusercontent.com/gautsi/gen-purpose-repo/master/baby_times/baby_times_prep_ver1_081019.csv"),
     ]).then(datasets => {
         store.times = datasets[0];
         return store;
@@ -33,8 +33,8 @@ function getBabyChartConfig() {
         left: 50,
         right: 10
     }
-    let bodyHeight = height - margin.top - margin.bottom
-    let bodyWidth = width - margin.left - margin.right
+    let bodyHeight = height - margin.top - margin.bottom;
+    let bodyWidth = width - margin.left - margin.right;
     let container = d3.select("#time")
     container
         .attr("width", width)
