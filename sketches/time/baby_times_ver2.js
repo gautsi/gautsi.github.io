@@ -158,6 +158,17 @@ function scales() {
 function drawSleeps() {
   store.sleepBars = store.timesBody.selectAll(".sleep").data(store.sleeps);
 
+  // draw grey background bar
+  store.sleepBars
+    .enter()
+    .append("rect")
+    .attr("height", store.yScale.bandwidth())
+    .attr("y", e => store.yScale(e.startDate.date))
+    .attr("x", 0)
+    .attr("width", store.timesWidth)
+    .attr("fill", "#eeeeee");
+
+
   store.sleepBars
     .enter()
     .append("rect")
