@@ -9,4 +9,4 @@ categories: post
 <svg id="time"></svg>
 
 <script src="https://d3js.org/d3.v5.min.js"></script>
-<script src="/sketches/time/time.js"></script>
+<script src="/sketches/time/baby_times_ver2.js"></script>
