@@ -42,8 +42,8 @@ function preProcess() {
 
 function config(){
   store.height = 500;
-  store.timesWidth = 600;
-  store.barWidth = 200;
+  store.timesWidth = 800;
+  store.barWidth = 0;
   store.margin = {
       top: 10,
       bottom: 20,
