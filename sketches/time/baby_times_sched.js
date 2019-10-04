@@ -42,12 +42,12 @@ function preProcess() {
 
 function config(){
   store.height = 500;
-  store.timesWidth = 800;
+  store.timesWidth = 900;
   store.barWidth = 0;
   store.margin = {
       top: 10,
       bottom: 20,
-      left: 40,
+      left: 60,
       right: 10,
       mid: 10
   };
@@ -96,7 +96,7 @@ function drawSleeps() {
     .attr("y", e => store.yScale(e.startDate))
     .attr("x", 0)
     .attr("width", store.timesWidth)
-    .attr("fill", "#eeeeee");
+    .attr("fill", e => e.startDate.getDay() > 0 & e.startDate.getDay() < 5?"#eeeeee":"#cccccc"); // "#eeeeee");
 
   store.sleeps.forEach(e => {
     e.width = store.xScale(e.fixedEndTime) - store.xScale(e.startTime);
@@ -120,7 +120,7 @@ function drawFeeds() {
     .attr("r", store.yScale.bandwidth() / 5)
     .attr("cy", e => store.yScale(e.startDate) + store.yScale.bandwidth() / 2)
     .attr("cx", e => store.xScale(e.startTime))
-    .attr("fill", e => e.subtype == "nursed"?d3.schemeDark2[1]:d3.schemeDark2[2]);
+    .attr("fill", e => ["nursed", "bottle"].includes(e.subtype)?d3.schemeDark2[1]:d3.schemeDark2[2]);
 }
 
 function drawBars() {
@@ -147,7 +147,7 @@ function axes() {
   store.gX.call(store.axisX);
 
   store.axisY = d3.axisLeft(store.yScale)
-    .tickFormat(d3.timeFormat("%m-%d"));
+    .tickFormat(d3.timeFormat("%a, %m-%d"));
 
   store.gY = store.container.append("g")
     .style("transform",
