@@ -41,7 +41,7 @@ function preProcess() {
 }
 
 function config(){
-  store.height = 500;
+  store.height = 600;
   store.timesWidth = 900;
   store.barWidth = 0;
   store.margin = {
@@ -98,9 +98,11 @@ function drawSleeps() {
     .attr("width", store.timesWidth)
     .attr("fill", e => e.startDate.getDay() > 0 & e.startDate.getDay() < 5?"#eeeeee":"#cccccc"); // "#eeeeee");
 
+  // add width of sleep bars
   store.sleeps.forEach(e => {
     e.width = store.xScale(e.fixedEndTime) - store.xScale(e.startTime);
   });
+
 
   store.sleepBars
     .enter()
@@ -108,7 +110,7 @@ function drawSleeps() {
     .attr("height", store.yScale.bandwidth())
     .attr("y", e => store.yScale(e.startDate))
     .attr("x", e => store.xScale(e.startTime))
-    .attr("width", e => store.xScale(e.fixedEndTime) - store.xScale(e.startTime))
+    .attr("width", e => e.width)
     .attr("fill", e => d3.schemeDark2[0]);
 }
 
@@ -117,7 +119,7 @@ function drawFeeds() {
   store.feedPoints
     .enter()
     .append("circle")
-    .attr("r", store.yScale.bandwidth() / 5)
+    .attr("r", store.yScale.bandwidth() / 4)
     .attr("cy", e => store.yScale(e.startDate) + store.yScale.bandwidth() / 2)
     .attr("cx", e => store.xScale(e.startTime))
     .attr("fill", e => ["nursed", "bottle"].includes(e.subtype)?d3.schemeDark2[1]:d3.schemeDark2[2]);
