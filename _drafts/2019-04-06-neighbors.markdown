@@ -9,7 +9,6 @@ categories: post
 </div>
 
 <script src="https://d3js.org/d3.v5.min.js"></script>
-
 <script src="/sketches/neighbors/neighbors.js"></script>
 
 ### Notes

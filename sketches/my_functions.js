@@ -102,3 +102,7 @@ function plot(values, plotWindowSize, x, y, w, h, c) {
     map(values[values.length - 1], maxVal, 0, y, y + h));
 
 }
+
+function dist(v1, v2) {
+  return Math.sqrt([0, 1].map(i => Math.pow(v1[i] - v2[i], 2)).reduce((a, b) => a + b));
+}
