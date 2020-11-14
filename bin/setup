@@ -1,0 +1,5 @@
+#! /bin/bash
+# run this from the main repo folder
+
+# tmux
+tmux new-session -d \; split-window "code-server --auth=none --user-data-dir=/dockvol/code_server/user_data_dir/ --extensions-dir=/dockvol/code_server/extensions/"\; send-keys C-o \; attach

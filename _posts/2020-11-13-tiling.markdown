@@ -1,0 +1,15 @@
+---
+layout: post
+title:  "A tiling by squares and triangles"
+date:   2020-11-13
+categories: post
+p5:
+  - p5
+  - addons/p5.dom
+sketches:
+  - tiling
+---
+
+I've become obsessed by what I think is a tiling of the plane by squares and equilateral triangles with the same side length. I first got an inkling of it when playing with my (almost two year old now) kid and a set of magnetic tiles. The tiling starts with six triangles organized into a hexagon, and continues from there.
+
+<div id="tiling" style="height: 400px; width:400px; position:relative;" ></div>
