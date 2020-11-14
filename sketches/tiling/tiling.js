@@ -43,43 +43,30 @@ function drawReference(sketch, c) {
     sketch.point(0, 0);
 }
 
-
-function create(sketch) {
+function drawActions(sketch, actions, num_actions) {
     let shape;
     let rot = 0;
-    let x = 0;
-    let y = 0;
-    let angle = 0;
-    let actions = [];
-
-    sketch.setup = () => {
-        sketch.createCanvas(400, 400);
-        sketch.angleMode(sketch.RADIANS);
-        sketch.rectMode(sketch.CENTER);
-    }
-    sketch.draw = () => {
-        sketch.background(myLightColors[0]);
-        sketch.translate(sketch.width / 2, sketch.height / 2);
-        for (let i = 0; i < actions.length; i++) {
-            if (actions[i] == 'square') {
-                drawSquare(sketch);
-                shape = 'square';
-                rot = 0;
-            }
-            else if (actions[i] == 'triangle') {
-                drawTriangle(sketch);
-                shape = 'triangle';
-                rot = 0;
-            }
-            if (actions[i] == 'switch') {
-                switchSide(sketch, shape, rot);
-                rot += 1;
-            }
+    for (let i = 0; i < min(num_actions, actions.length); i++) {
+        if (actions[i] == 'square') {
+            drawSquare(sketch);
+            shape = 'square';
+            rot = 0;
         }
-        drawReference(sketch, myDarkColors[2]);
+        else if (actions[i] == 'triangle') {
+            drawTriangle(sketch);
+            shape = 'triangle';
+            rot = 0;
+        }
+        if (actions[i] == 'switch') {
+            switchSide(sketch, shape, rot);
+            rot += 1;
+        }
     }
+    drawReference(sketch, myDarkColors[2]);
+}
 
-    sketch.keyPressed = () => {
+function readKey(sketch, actions) {
+    return () => {
         // s for "square"
         if (sketch.keyCode == 83) {
             actions.push('square');
@@ -102,4 +89,41 @@ function create(sketch) {
     }
 }
 
+function setup(sketch, fr) {
+    return () => {
+        sketch.createCanvas(400, 400);
+        sketch.angleMode(sketch.RADIANS);
+        sketch.rectMode(sketch.CENTER);
+        sketch.frameRate(fr);
+    }
+}
+
+function create(sketch) {
+    let actions = [];
+
+    sketch.setup = setup(sketch, 60);
+    sketch.draw = () => {
+        sketch.background(myLightColors[0]);
+        sketch.translate(sketch.width / 2, sketch.height / 2);
+        drawActions(sketch, actions, actions.length);
+    }
+
+    sketch.keyPressed = readKey(sketch, actions);
+}
+
+function auto(sketch) {
+    let actions = ['triangle', 'switch', 'triangle', 'switch'];
+    let action_num = 0;
+
+    sketch.setup = setup(sketch, 10);
+    sketch.draw = () => {
+        sketch.background(myLightColors[0]);
+        sketch.translate(sketch.width / 2, sketch.height / 2);
+        drawActions(sketch, actions, action_num);
+        action_num += 1;
+    }
+}
+
 let createp5 = new p5(create, 'tiling');
+
+let autop5 = new p5(auto, 'autotiling');
