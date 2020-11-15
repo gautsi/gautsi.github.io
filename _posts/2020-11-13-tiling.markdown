@@ -12,8 +12,8 @@ sketches:
 
 I've become obsessed by what I think is a tiling of the plane by squares and equilateral triangles with the same side length. I first got an inkling of it when playing with my (almost two year old now) kid and a set of magnetic tiles. The tiling starts with six triangles organized into a hexagon, and continues from there.
 
-<div id="autotiling" style="height: 400px; width:400px; position:relative;" ></div>
+<div id="autotiling" style="height: 500px; width:500px; position:relative;" ></div>
 
 Try it yourself! s to draw a square, t to draw a triangle, r to switch side, d to delete last action.
 
-<div id="tiling" style="height: 400px; width:400px; position:relative;" ></div>
+<div id="tiling" style="height: 500px; width:500px; position:relative;" ></div>

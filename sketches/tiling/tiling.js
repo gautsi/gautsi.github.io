@@ -1,5 +1,7 @@
 let sideLength = 20;
-let shapeColors = [myDarkColors[0], myDarkColors[2]]
+let shapeColors = [myLightColors[1], myLightColors[2]]
+let edgeColor = 'black';
+let scale = 0.75;
 
 function switchSide(sketch, shape, rot) {
     if (shape == 'square') {
@@ -24,7 +26,7 @@ function switchSide(sketch, shape, rot) {
 
 function drawShape(sketch, color, shapeFunc) {
     sketch.strokeWeight(2);
-    sketch.stroke(myDarkColors[1]);
+    sketch.stroke(edgeColor);
     sketch.fill(color);
     shapeFunc(sketch);
 }
@@ -49,6 +51,7 @@ function drawActions(sketch, actions, num_actions) {
     let shape;
     let rot = 0;
     let colorIndex = 0;
+    sketch.scale(scale);
     for (let i = 0; i < min(num_actions, actions.length); i++) {
         if (actions[i] == 's') {
             drawShape(sketch, shapeColors[colorIndex], drawSquare);
@@ -102,7 +105,7 @@ function readKey(sketch) {
 
 function setup(sketch, fr) {
     return () => {
-        sketch.createCanvas(400, 400);
+        sketch.createCanvas(500, 500);
         sketch.angleMode(sketch.RADIANS);
         sketch.rectMode(sketch.CENTER);
         sketch.frameRate(fr);
@@ -135,15 +138,24 @@ function auto(sketch) {
         Array(11).fill('rsrrrtrtrrtrt'),
         ['crrtrsrrsrrs'],
         Array(11).fill('rtrrsrrsrrs'),
-        ['crr']].flat().join('');
+        ['crrtrtrrtrtrrtrtrrsrt'],
+        Array(11).fill('rtrrtrrtrtrrtrtrrsrt'),
+        ['crrtrtrrtrtrrsrrtrtrtrrs'],
+        Array(11).fill('rtrrtrrtrtrrsrrtrtrtrrs'),
+        ['crrsrrtrrtrsrrtrsrrtrrtrt'],
+        Array(11).fill('rsrrrtrrtrsrrtrsrrtrrtrt'),
+        ['crrsrrtrtrrsrtrrsrtrrsrrt'],
+        Array(11).fill('rsrrrtrtrrsrtrrsrtrrsrrt'),
+        ['crrsrtrrsrrtrtrtrrtrrsrtrtrrtrrt'],
+        Array(11).fill('rsrrtrrsrrtrtrtrrtrrsrtrtrrtrrt')].flat().join('');
     sketch.action_num = 0;
 
-    sketch.setup = setup(sketch, 120);
+    sketch.setup = setup(sketch, 60);
     sketch.draw = () => {
         sketch.background(myLightColors[0]);
         sketch.translate(sketch.width / 2, sketch.height / 2);
         drawActions(sketch, sketch.actions, sketch.action_num);
-        sketch.action_num += 1;
+        sketch.action_num += 100;
     }
 }
 
