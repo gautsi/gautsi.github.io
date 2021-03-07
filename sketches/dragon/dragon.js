@@ -27,7 +27,7 @@ function getDir(num) {
         case 4: return 1;
         case 5: return 0;
         case 6: return 0;
-        default: return getDir((num + 1) / 4);
+        default: return getDir((num + 1) / 4 - 1);
     }
     
 }
@@ -37,6 +37,7 @@ function drawCurve(sketch) {
     sketch.line(0, 0, 0, sketch.line_length);
     sketch.translate(0, sketch.line_length);
     for (let i = 0; i < sketch.num; i++) {
+        sketch.stroke(myDarkColors[i % 4]);
         if (getDir(i) == 0) {
             goLeft(sketch);
         }
@@ -49,15 +50,16 @@ function drawCurve(sketch) {
 function create(sketch) {
     sketch.num = 1;
     sketch.line_length = 10;
-    sketch.setup = setup(sketch, 15);
+    sketch.setup = setup(sketch, 60);
     sketch.draw = () => {
+        diff = 0.3 * (1/sqrt(sketch.num));
         sketch.background(myLightColors[0]);
         sketch.translate(sketch.width / 2, sketch.height / 2);
         drawCurve(sketch);
-        sketch.num += 1;
-        if (sketch.num % 400 == 0) {
-            sketch.line_length -= 1;
+        if (sketch.num < 20000){
+            sketch.num += 10;
         }
+        sketch.line_length -= diff;
     }
 }
 
