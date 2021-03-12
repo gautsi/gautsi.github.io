@@ -2,4 +2,4 @@
 # run this from the main repo folder
 
 # tmux
-tmux new-session -d \; split-window -v "code-server --auth=none --user-data-dir=/dockvol/code_server/user_data_dir/ --extensions-dir=/dockvol/code_server/extensions/"\; split-window -h "bundle exec jekyll serve --drafts"\; send-keys C-o \; attach
+tmux new-session -d \; split-window -v "code-server --auth=none --user-data-dir=/dockvol/code_server/user_data_dir/ --extensions-dir=/dockvol/code_server/extensions/ /dockvol/gautsi.github.io"\; split-window -h "bundle exec jekyll serve --drafts"\; send-keys C-o \; attach
