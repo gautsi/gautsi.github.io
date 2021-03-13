@@ -61,14 +61,15 @@ function mult(sketch, i) {
 }
 
 function getAngle(sketch, i) {
-    let angle = sketch.PI - sketch.PI / 2 * (1 / (1 + exp(-0.01 * sketch.time)));
+    let dist_from_middle = sketch.num / 2 - abs(sketch.num / 2 - i);
+    let angle = sketch.PI - sketch.PI / 2 * (1 / (1 + exp(-0.1 * (sketch.time - 100*dist_from_middle))));
     // let angle = sketch.PI / 2 * mult(sketch, i);
     return angle;
 }
 
 function create(sketch) {
     sketch.time = 1;
-    sketch.num = 2 ** 12 - 1;
+    sketch.num = 2 ** 10 - 1;
     sketch.line_length = 15;
     sketch.setup = setup(sketch, 60);
     sketch.draw = () => {
@@ -76,6 +77,7 @@ function create(sketch) {
         sketch.translate(sketch.width / 2, sketch.height / 2);
         drawCurve(sketch);
         sketch.time += 1;
+        sketch.line_length -= 0.0005
     }
 }
 
