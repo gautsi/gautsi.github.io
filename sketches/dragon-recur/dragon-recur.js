@@ -45,12 +45,12 @@ function drawSeq(sketch, seq) {
 }
 
 function drawCurve(sketch, seq) {
-    let seq_plus = seq.concat(1);
-    console.log(seq_plus);
-    drawSeq(sketch, seq_plus);
-    if (seq.length < 4) {
-        drawCurve(sketch, reverse(seq_plus).map(i => -1 * i));
+    if (seq.length < 600) {
+        let rev = reverse(seq.slice(0, -1)).map(i => -1*i)
+        drawCurve(sketch, seq.concat(rev).concat(1));
     } else { 
+        console.log(seq);
+        drawSeq(sketch, seq);
         sketch.noLoop();
     }
 }
@@ -58,14 +58,14 @@ function drawCurve(sketch, seq) {
 function create(sketch) {
     sketch.time = 1;
     sketch.num = 2 ** 10 - 1;
-    sketch.line_length = 15;
+    sketch.line_length = 5;
     sketch.setup = setup(sketch, 60);
     sketch.draw = () => {
         sketch.strokeWeight(3);
         sketch.stroke(myDarkColors[2]);
         sketch.background(myLightColors[0]);
         sketch.translate(sketch.width / 2, sketch.height / 2);
-        drawCurve(sketch, [1, 1, -1]);
+        drawCurve(sketch, [1]);
         sketch.time += 1;
     }
 }
