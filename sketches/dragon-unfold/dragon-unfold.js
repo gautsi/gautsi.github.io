@@ -70,7 +70,7 @@ function getAngle(sketch, i) {
 function create(sketch) {
     sketch.time = 1;
     sketch.num = 2 ** 10 - 1;
-    sketch.line_length = 15;
+    sketch.line_length = 20;
     sketch.setup = setup(sketch, 60);
     sketch.draw = () => {
         sketch.background(myLightColors[0]);
