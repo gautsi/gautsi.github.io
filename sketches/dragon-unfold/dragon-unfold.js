@@ -70,14 +70,14 @@ function getAngle(sketch, i) {
 function create(sketch) {
     sketch.time = 1;
     sketch.num = 2 ** 10 - 1;
-    sketch.line_length = 20;
+    sketch.line_length = 30;
     sketch.setup = setup(sketch, 60);
     sketch.draw = () => {
         sketch.background(myLightColors[0]);
         sketch.translate(sketch.width / 2, sketch.height / 2);
         drawCurve(sketch);
         sketch.time += 1;
-        sketch.line_length -= 0.0005
+        sketch.line_length -= 0.001
     }
 }
 
