@@ -24,10 +24,6 @@ function drawCurve(sketch, seq) {
     }
 }
 
-function logistic(x, min, max, rate, shift) {
-    return min + max / (1 + exp(-1 * rate * (x - shift)))
-}
-
 function create(sketch) {
     sketch.time = 0;
     sketch.num = 2 ** 10 - 1;
