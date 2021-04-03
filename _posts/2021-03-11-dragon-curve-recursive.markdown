@@ -13,7 +13,7 @@ sketches:
 
 ## Three ways of turning a dragon curve into a new dragon curve
 
-### Way 1: fold
+### Way 1: fold it
 
 <div id="dragon-fold" style="height: 500px; width:500px; position:relative;" ></div>
 
