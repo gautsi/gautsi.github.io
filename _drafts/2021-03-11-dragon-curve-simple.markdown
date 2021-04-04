@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Dragon curve folding and unfolding"
+title:  "Dragon curve unfolding and refolding"
 date:   2021-04-03
 categories: post
 p5:
@@ -46,8 +46,9 @@ function drawSeq(seq) {
 
 function makeAndDrawSeq(seq, level = 1) {
     if (seq.length < 2 ** 8) {
-        let rev = reverse(seq.slice(0, -1)).map(i => -1 * i)
-        makeAndDrawSeq(seq.concat(rev).concat(foldStep(level)), level + 1);
+        let rev = seq.slice().reverse().map(i => -1 * i)
+        makeAndDrawSeq(
+          seq.concat(foldStep(level)).concat(rev), level + 1);
     } else {
         drawSeq(seq);
     }
@@ -60,14 +61,61 @@ function draw() {
     background(102, 194, 165);
     translate(width / 3, height / 3);
     makeAndDrawSeq([foldStep()]);
-    // saveCanvas('dragon_curve_frame', 'png');
 }
 {% endhighlight %}
 
-### The curve
+### Drawing the curve
+
+There are at least a few different ways of encoding the dragon curve. The way I do it here is to think of walking along the curve so that it becomes a series of left and right turns (right = 1, left = -1). The function `drawSeq` draws a sequence of 1s and -1s as left and right turns along a walk:
+
+```js
+function drawSeq(seq) {
+    seq.map((i) => {
+        line(0, 0, 0, 10);
+        translate(0, 10);
+        rotate(i * PI / 2);
+    })
+}
+```
+
+### Building the curve
+
+But how to build the particular sequence of 1s and -1s that is the dragon curve? Here is the start of it:
+```js
+1, 1, -1, 1, 1, -1, -1, ...
+```
+
+If we imagine we have unfolded the curve and are at the exact middle of the walk along the curve, the curve behind us and the curve ahead of us is the same, just rotated away from each other by 90 degrees (`PI / 2` radians). Walking along the curve from the middle to the end is like walking the curve from the middle to the start but in opposite, so a left turn becomes a right and vice versa. So to generate the next half of the dragon curve sequence, we append the reverse and opposite of the sequence to the end (joined together with a right turn (1) that indicates the 90 degree separation between the halves). Here are the first few generations starting from a single right turn:
+
+```js
+1
+1 1 -1
+1 1 -1 1 1 -1 -1 
+1 1 -1 1 1 -1 -1 1 1 1 -1 -1 1 -1 -1
+```
+
+The function `makeAndDrawSeq` implements this recursive process to build the sequence (and then draws it when long enough). Just assume `foldStep(level)` is 1 for now, will be discussed in the next section.
+
+```js
+function makeAndDrawSeq(seq, level = 1) {
+    if (seq.length < 2 ** 8) {
+        let rev = seq.slice().reverse().map(i => -1 * i)
+        makeAndDrawSeq(
+          seq.concat(foldStep(level)).concat(rev), level + 1);
+    } else {
+        drawSeq(seq);
+    }
+}
+```
+
+### Unfolding and refolding
 
 
 ## Sketch to gif
+
+```js
+saveCanvas('dragon_curve_frame', 'png');
+```
 
 ```sh
 ffmpeg -i dragon_curve_unfolding.mp4 -filter_complex "[0:v] fps=12,scale=480:-1,split [a][b];[a] palettegen [p];[b][p] paletteuse" dragon_curve_unfolding3.gif

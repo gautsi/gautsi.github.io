@@ -27,20 +27,19 @@ function drawSeq(seq) {
 
 function makeAndDrawSeq(seq, level = 1) {
     if (seq.length < 2 ** 8) {
-        let rev = reverse(seq.slice(0, -1)).map(i => -1 * i)
-        makeAndDrawSeq(seq.concat(rev).concat(foldStep(level)), level + 1);
+        let rev = seq.slice().reverse().map(i => -1 * i)
+        makeAndDrawSeq(
+            seq.concat(foldStep(level)).concat(rev), level + 1);
     } else {
         drawSeq(seq);
     }
 }
 
 function draw() {
-    console.log(millis());
     angleMode(RADIANS);
     strokeWeight(3);
     stroke(117, 112, 179);
     background(102, 194, 165);
     translate(width / 3, height / 3);
     makeAndDrawSeq([foldStep()]);
-    // saveCanvas('dragon_curve_frame', 'png');
 }
