@@ -43,17 +43,20 @@ function drawSeq(sketch, seq) {
   });
 }
 
-function makeAndDrawSeq(sketch, seq, level = 1) {
-  if (seq.length < 2 ** 8) {
+function makeAndDrawSeq(sketch, seq, foldStepFunc = foldStep, level = 1) {
+  if (seq.length < 2 ** 7) {
     let rev = seq
       .slice()
       .reverse()
       .map((i) => -1 * i);
 
-    let newSeq = seq.concat(foldStep(sketch, step(sketch), level)).concat(rev);
+    let newSeq = seq
+      .concat(foldStepFunc(sketch, step(sketch), level))
+      .concat(rev);
 
-    makeAndDrawSeq(sketch, newSeq, level + 1);
+    makeAndDrawSeq(sketch, newSeq, foldStepFunc, level + 1);
   } else {
+    // console.log(seq);
     drawSeq(sketch, seq);
   }
 }
@@ -63,6 +66,7 @@ function commonSetup(sketch, width, height) {
   sketch.angleMode(sketch.RADIANS);
   sketch.strokeWeight(3);
   sketch.stroke(117, 112, 179);
+  sketch.fill(117, 112, 179);
 }
 
 function commonDraw(sketch) {
@@ -129,19 +133,21 @@ If we imagine we have unfolded the curve and are at the exact middle of the walk
 1 1 -1 1 1 -1 -1 1 1 1 -1 -1 1 -1 -1
 ```
 
-The function `makeAndDrawSeq` implements this recursive process to build the sequence (and then draws it when long enough). Just assume `foldStep` is 1 for now, will be discussed in the next section.
+The function `makeAndDrawSeq` implements this recursive process to build the sequence (and then draws it when long enough). Assume for now that `foldStepFunc` always returns 1, will be discussed in the next section.
 
 ```js
-function makeAndDrawSeq(sketch, seq, level = 1) {
-  if (seq.length < 2 ** 8) {
+function makeAndDrawSeq(sketch, seq, foldStepFunc = foldStep, level = 1) {
+  if (seq.length < 2 ** 7) {
     let rev = seq
       .slice()
       .reverse()
       .map((i) => -1 * i);
 
-    let newSeq = seq.concat(foldStep(sketch, step(sketch), level)).concat(rev);
+    let newSeq = seq
+      .concat(foldStepFunc(sketch, step(sketch), level))
+      .concat(rev);
 
-    makeAndDrawSeq(sketch, newSeq, level + 1);
+    makeAndDrawSeq(sketch, newSeq, foldStepFunc, level + 1);
   } else {
     drawSeq(sketch, seq);
   }
@@ -158,19 +164,115 @@ For example, here is the drawing of the sequence `1.5, -1.5, 1.5, -1.5, 1.5, -1.
 
 #### How to smoothly vary a bend from closed to open and back?
 
-To get the smooth opening and closing of bends, I vary the sequence entries smoothly between 2 and 1 or -2 and -1.
+To get the smooth opening and closing of bends, I vary the sequence entries smoothly between 2 and 1 or -2 and -1. I use a logistic function[^wikilogistic] to get the smoothly varying value.
+
+<div id="single_logistic" style="height: 175px; width:100px; position:relative;" ></div>
+
+The code to make the above sketch:
+
+```js
+
+function logistic(sketch, x, shift = 0) {
+  return 1 / (1 + sketch.exp(-1 * 0.01 * (x - shift)));
+}
+
+function yToChart(value) {
+  return 125 - 100 * value;
+}
+
+function drawAxes(sketch) {
+  sketch.background(102, 194, 165);
+  sketch.line(25, 125, 25, 25);
+  sketch.line(25, 125, 175, 125);
+  sketch.strokeWeight(1);
+  sketch.text("time", 165, 140);
+  [0, 1, 2].map((i) => sketch.text(i, 15, yToChart(i)));
+  sketch.strokeWeight(3);
+}
+
+let singleLogisticEx = new p5((sketch) => {
+  sketch.setup = () => {
+    commonSetup(sketch, 200, 150);
+  };
+  sketch.draw = () => {
+    drawAxes(sketch);
+    for (let i = 0; i < 150; i++) {
+      sketch.point(i + 25, yToChart(2 - logistic(sketch, 10 * i, 600)));
+    }
+  };
+}, "single_logistic");
+```
+
+The `shift` parameter controls when the varying between values actually happens: initially the logistic function is fairly constant on the original value, and later on the function is fairly constant on the changed value.
+
+If unfolding is varying sequence entries smoothly from 2 to 1 or -2 to -1, then refolding is just varying the entries back. To get this effect I take the difference of two logistic functions with different shifts (so they change at different times):
+
+<div id="double_logistic" style="height: 175px; width:100px; position:relative;" ></div>
+
+The code to get the above sketch:
+```js
+let doubleLogisticEx = new p5((sketch) => {
+  sketch.setup = () => {
+    commonSetup(sketch, 200, 150);
+  };
+  sketch.draw = () => {
+    drawAxes(sketch);
+    for (let i = 0; i < 150; i++) {
+      let y =
+        2 - logistic(sketch, 20 * i, 600) + logistic(sketch, 20 * i, 2000);
+      sketch.point(i + 25, yToChart(y));
+    }
+  };
+}, "double_logistic");
+```
 
 #### Which bends to close/open when?
 
+Unfolding/refolding all bends at the same time gives a nice effect but not the sequential effect I'm looking for:
+
+<div id="all_bends" style="height: 325px; width:200px; position:relative;" ></div>
+
+The code to get the above sketch:
+```js
+let allBendsEx = new p5((sketch) => {
+  sketch.setup = () => {
+    commonSetup(sketch, 200, 300);
+  };
+  sketch.draw = () => {
+    commonDraw(sketch);
+    makeAndDrawSeq(sketch, [1], (sketch, x, level) => foldStep(sketch, x));
+  };
+}, "all_bends");
+```
+
+The problem is to figure out when each bend should unfold. For each unfolding step, which bends actually unfold? Imagine in a simple case that a paper is folded twice, so that there are three folds. On the first unfolding, the first and last bends unfold, followed by the middle bend on the next folding. In general, the middle bend is unfolded last. 
+
+#### Looping
+
+I use the p5js [`millis`](https://p5js.org/reference/#/p5/millis) function to keep track of the time and the current animation step (it gives the milliseconds since the sketch started). To get the sketch to loop continuously from unfolding to refolding to unfolding again and so on, I use the modulo operator on `milis`:
+
+```js
+function step(sketch) {
+  return sketch.millis() % 17500;
+}
+```
+
+So every 17,500 milliseconds (trial and error to figure out a good number here), the animation goes back to step 0.
 
 ## Sketch to gif
 
 ```js
-saveCanvas('dragon_curve_frame', 'png');
+sketch.saveCanvas('dragon_curve_frame', 'png');
 ```
 
 ```sh
-ffmpeg -i dragon_curve_unfolding.mp4 -filter_complex "[0:v] fps=12,scale=480:-1,split [a][b];[a] palettegen [p];[b][p] paletteuse" dragon_curve_unfolding3.gif
+ffmpeg \
+  -framerate 60 \
+  -i 'gifs/dragon_curve/images/dragon_curve_frame(%d).png' \
+  -filter_complex "[0:v] fps=12,scale=480:-1,split [a][b];[a] palettegen [p];[b][p] paletteuse" \
+  gifs/dragon_curve/dragon_curve_unfolding.gif
 ```
 
 [^wiki]: the dragon curve wikipedia [entry](https://en.wikipedia.org/wiki/Dragon_curve)
+[^wikilogistic]: the logistic function wikipedia [entry](https://en.wikipedia.org/wiki/Logistic_function)
+[^gifguide]: a [guide](https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/) on giphy to using ffmpeg to make gifs
