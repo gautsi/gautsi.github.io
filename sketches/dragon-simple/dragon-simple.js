@@ -37,7 +37,6 @@ function makeAndDrawSeq(sketch, seq, foldStepFunc = foldStep, level = 1) {
 
     makeAndDrawSeq(sketch, newSeq, foldStepFunc, level + 1);
   } else {
-    // console.log(seq);
     drawSeq(sketch, seq);
   }
 }
@@ -85,17 +84,17 @@ let intermediateEx = new p5((sketch) => {
   };
 }, "intermediate_ex");
 
-function yToChart(value) {
-  return 125 - 50 * value;
+function yToChart(value, xaxis = 125) {
+  return xaxis - 50 * value;
 }
 
-function drawAxes(sketch) {
-  sketch.background(102, 194, 165);
-  sketch.line(25, 125, 25, 25);
-  sketch.line(25, 125, 175, 125);
+function drawAxes(sketch, xaxis = 125, width = 150, title = "") {
+  sketch.line(25, xaxis, 25, xaxis - 100);
+  sketch.line(25, xaxis, 25 + width, xaxis);
   sketch.strokeWeight(1);
-  sketch.text("time", 165, 140);
-  [0, 1, 2].map((i) => sketch.text(i, 15, yToChart(i)));
+  sketch.text("time", 15 + width, xaxis + 20);
+  [0, 1, 2].map((i) => sketch.text(i, 15, yToChart(i, xaxis)));
+  sketch.text(title, 15 + width / 2, xaxis - 90);
   sketch.strokeWeight(3);
 }
 
@@ -104,6 +103,7 @@ let singleLogisticEx = new p5((sketch) => {
     commonSetup(sketch, 200, 150);
   };
   sketch.draw = () => {
+    sketch.background(102, 194, 165);
     drawAxes(sketch);
     for (let i = 0; i < 150; i++) {
       let y = 2 - logistic(sketch, 20 * i, 1200);
@@ -117,6 +117,7 @@ let doubleLogisticEx = new p5((sketch) => {
     commonSetup(sketch, 200, 150);
   };
   sketch.draw = () => {
+    sketch.background(102, 194, 165);
     drawAxes(sketch);
     for (let i = 0; i < 150; i++) {
       let y =
@@ -135,3 +136,19 @@ let allBendsEx = new p5((sketch) => {
     makeAndDrawSeq(sketch, [1], (sketch, x, level) => foldStep(sketch, x));
   };
 }, "all_bends");
+
+let LogisticLevelEx = new p5((sketch) => {
+  sketch.setup = () => {
+    commonSetup(sketch, 400, 425);
+  };
+  sketch.draw = () => {
+    sketch.background(102, 194, 165);
+    for (let level = 0; level < 3; level++) {
+      drawAxes(sketch, 125 * (level + 1), 350, (title = "level " + level));
+      for (let i = 0; i < 400; i++) {
+        let y = foldStep(sketch, 50 * i, level);
+        sketch.point(i + 25, yToChart(y, 125 * (level + 1)));
+      }
+    }
+  };
+}, "logistic_level");
